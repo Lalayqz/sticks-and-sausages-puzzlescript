@@ -1,0 +1,310 @@
+author Lala_yqz
+
+sprite_size 10x10
+
+verbose_logging
+debug
+//
+
+
+====
+TAGS
+====
+
+pushable_type = stick sausage
+is_tip = tip not_tip
+
+force_type = simple slip
+is_countered = uncountered countered
+
+
+pushable_type_2 = pushable_type
+
+========
+MAPPINGS
+========
+
+directions => opposite_direction
+up down left right -> down up right left
+
+directions => clockwise_direction
+up right down left -> right down left up
+
+directions => counter_clockwise_direction
+up right down left -> left up right down
+
+========
+OBJECTS
+========
+
+( stick_simple  sausage_simple
+       /        sausage_slip  )
+
+background 
+green     
+
+wall 
+brown
+
+pushable:pushable_type:is_tip:directions
+transparent
+
+pushable:stick:tip:directions
+orange
+....00....
+....00....
+....0000..
+....0000..
+....0000..
+....0000..
+....0000..
+....0000..
+....0000..
+....0000..
+rot:up:>
+
+pushable:stick:not_tip:directions
+orange
+..0000....
+..0000....
+..0000....
+..0000....
+..0000....
+..0000....
+..0000....
+..0000....
+..0000....
+..0000....
+rot:up:>
+
+pushable:sausage:not_tip:directions
+lightred
+..000000..
+..000000..
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+rot:up:>
+
+
+force:force_type:directions:pushable_type:is_countered
+transparent
+
+force:simple:directions:stick:uncountered
+black
+..0..
+.000.
+0.0.0
+..0..
+..0..
+rot:up:> translate:up:5
+
+force:slip:directions:sausage:uncountered
+blue
+..0..
+.000.
+0.0.0
+..0..
+..0..
+rot:up:> translate:right:5 
+
+force:simple:directions:sausage:uncountered
+black
+..0..
+.000.
+0.0.0
+..0..
+..0..
+rot:up:> translate:right:5 translate:up:5
+
+force:simple:directions:stick:countered
+grey
+copy:force:simple:directions:stick:uncountered
+
+force:slip:directions:sausage:countered
+lightblue
+copy:force:slip:directions:sausage:uncountered
+
+force:simple:directions:sausage:countered
+grey
+copy:force:simple:directions:sausage:uncountered
+
+temp_force_direction:force_type:directions:pushable_type
+transparent
+
+temp_force_direction:simple:directions:sausage
+black
+0000000000
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+rot:up:>
+
+temp_force_direction:slip:directions:sausage
+blue
+copy:temp_force_direction:simple:directions:sausage
+
+spread:pushable_type
+yellow
+....0.
+...000
+....0.
+......
+......
+......
+
+spread_next:pushable_type
+orange
+....0.
+...000
+....0.
+......
+......
+......
+
+calculate_moving_direction:pushable_type
+transparent
+
+=======
+LEGEND
+=======
+
+. = background
+# = wall
+thing = pushable:pushable_type:is_tip:directions or wall
+
+∩ = pushable:sausage:not_tip:up
+∪ = pushable:sausage:not_tip:down
+⊂ = pushable:sausage:not_tip:left
+⊃ = pushable:sausage:not_tip:right
+1 = pushable:stick:tip:up
+I = pushable:stick:not_tip:down
+t = temp_force_direction:simple:up:sausage
+p = temp_force_direction:simple:right:sausage
+
+player = pushable:stick:is_tip:directions
+
+================
+COLLISIONLAYERS
+================
+
+background
+pushable:stick:is_tip:directions
+pushable:sausage:is_tip:directions, wall
+
+force_type directions pushable_type -> force:force_type:directions:pushable_type:is_countered
+force_type pushable_type -> temp_force_direction:force_type:directions:pushable_type
+
+pushable_type -> spread:pushable_type, spread_next:pushable_type
+calculate_moving_direction:pushable_type
+
+=====
+RULES     
+=====
+
+// Give force to player
+pushable_type [> pushable:pushable_type:is_tip:directions] -> [> pushable:pushable_type:is_tip:directions force:simple:>:pushable_type:uncountered]
+
+startloop
+
+  ( I Push )
+  
+  // Simple push
+  [> thing | pushable:sausage:not_tip:< no force:simple:>:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:< force:simple:>:sausage:uncountered calculate_moving_direction:sausage]
+  // Slip push
+    // [Rotation A] [Simple]
+  [> thing | pushable:sausage:not_tip:^ no force:simple:>:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:^ force:simple:>:sausage:uncountered calculate_moving_direction:sausage]
+    // [Rotation A] [Slip]
+  [> thing | pushable:sausage:not_tip:^ no force:slip:v:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:^ force:slip:v:sausage:uncountered calculate_moving_direction:sausage]
+    // [Rotation B] [Simple]
+  [> thing | pushable:sausage:not_tip:v no force:simple:>:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:v force:simple:>:sausage:uncountered calculate_moving_direction:sausage]
+    // [Rotation B] [Slip]
+  [> thing | pushable:sausage:not_tip:v no force:slip:^:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:v force:slip:^:sausage:uncountered calculate_moving_direction:sausage]
+
+
+
+  ( II Blocked )
+  
+  // Blocked by wall
+  force_type pushable_type [force:force_type:>:pushable_type:uncountered > pushable:pushable_type:is_tip:directions | wall] -> [force:force_type:>:pushable_type:countered > pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type | wall]
+  // Blocked by another pushable
+  force_type pushable_type [force:force_type:>:pushable_type:uncountered > pushable:pushable_type:is_tip:directions | force:force_type:>:pushable_type_2:countered] -> [force:force_type:>:pushable_type:countered > pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type | force:force_type:>:pushable_type_2:countered]
+  
+  
+  ( III Calculate moving direction)
+  
+  [calculate_moving_direction:pushable_type] -> [calculate_moving_direction:pushable_type] gosub calculate_moving_direction
+  
+endloop
+
+
+( Remove temp stuff )
+// Remove forces
+late [force:force_type:directions:pushable_type:is_countered] -> []
+late [temp_force_direction:force_type:directions:pushable_type] -> []
+
+
+( Spread moving direction & force within rigid )
+subroutine spread
+  startloop
+    // Moving BUG what if both moving and force need to spread?????
+    pushable_type [orthogonal pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [orthogonal pushable:pushable_type:is_tip:< spread:pushable_type | orthogonal pushable:pushable_type:is_tip:> spread_next:pushable_type]
+    // Not moving
+    pushable_type [stationary pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [stationary pushable:pushable_type:is_tip:< spread:pushable_type | stationary pushable:pushable_type:is_tip:> spread_next:pushable_type]
+    // Force [BUG?] switching the last two objects breaks the rule (when there is a tag as a rule prefix)
+    force_type directions pushable_type is_countered [force:force_type:directions:pushable_type:is_countered pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [force:force_type:directions:pushable_type:is_countered pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> force:force_type:directions:pushable_type:is_countered spread_next:pushable_type]
+    // No force
+    force_type directions pushable_type is_countered [pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no force:force_type:directions:pushable_type:is_countered no spread:pushable_type] -> [pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no force:force_type:directions:pushable_type:is_countered spread_next:pushable_type]
+    
+    pushable_type [spread_next:pushable_type] -> [spread:pushable_type]
+  endloop
+  [spread:pushable_type] -> []
+
+
+subroutine calculate_moving_direction
+  // First, clear moving direction
+  pushable_type [orthogonal pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type] -> [stationary pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type]
+  // Calculate moving direction for each type of force (temp_force_direction:force_type:directions)
+  // TODO add more additional rules
+  force_type directions pushable_type [force:force_type:directions:pushable_type:uncountered calculate_moving_direction:pushable_type no force:force_type:opposite_direction:pushable_type:uncountered no force:force_type:clockwise_direction:pushable_type:uncountered no force:force_type:counter_clockwise_direction:pushable_type:uncountered] -> [temp_force_direction:force_type:directions:pushable_type force:force_type:directions:pushable_type:uncountered calculate_moving_direction:pushable_type]
+  // Calculate final moving direction (slip push)
+  pushable_type [pushable:pushable_type:is_tip:directions temp_force_direction:slip:>:pushable_type calculate_moving_direction:pushable_type] -> [> pushable:pushable_type:is_tip:directions temp_force_direction:slip:>:pushable_type calculate_moving_direction:pushable_type spread:pushable_type]
+  // Calculate final moving direction (simple push)
+  // BUG[REPORTED] the "no" rule is not expanded with a pushable_type rule prefix (so I'm doing it manually)
+  pushable_type [pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type no temp_force_direction:slip:up:pushable_type no temp_force_direction:slip:right:pushable_type temp_force_direction:simple:>:pushable_type no temp_force_direction:slip:down:pushable_type no temp_force_direction:slip:left:pushable_type] -> [> pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type temp_force_direction:simple:>:pushable_type spread:pushable_type]
+  
+  // Clear "temp_force_direction:force_type" & "calculate_moving_direction", add "spread"
+  [temp_force_direction:force_type:directions:pushable_type] -> []
+  pushable_type [calculate_moving_direction:pushable_type] -> [spread:pushable_type] gosub spread
+  // BUG without this dummy line, execution directly exits instead of returning to main thread!! 
+  [pushable:pushable_type:is_tip:directions] -> [pushable:pushable_type:is_tip:directions]
+
+=======     
+LEVELS
+=======
+
+section push
+level push
+
+############
+#..........#
+#..1.......#
+#..i.......#
+#..........#
+#..........#
+#....⊂⊃....#
+#....⊂⊃....#
+#..........#
+#..........#
+############
