@@ -176,6 +176,12 @@ orange
 calculate_moving_direction:pushable_type
 transparent
 
+old_moving_direction:directions
+transparent
+
+dummy
+transparent
+
 =======
 LEGEND
 =======
@@ -209,6 +215,10 @@ force_type pushable_type -> temp_force_direction:force_type:directions:pushable_
 pushable_type -> spread:pushable_type, spread_next:pushable_type
 calculate_moving_direction:pushable_type
 
+old_moving_direction:directions
+
+dummy
+
 =====
 RULES     
 =====
@@ -224,7 +234,7 @@ startloop
   [> thing | pushable:sausage:not_tip:< no force:simple:>:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:< force:simple:>:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
   // Slip push
     // [Rotation A] [Simple + Slip] (The following 2 rules already did this job, but this rule is added to make the rule process shorter)
-  [> thing | pushable:sausage:not_tip:^ no force:simple:>:sausage:is_countered no force:slip:v:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:^ force:simple:>:sausage:uncountered pushable:sausage:not_tip:^ force:slip:v:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
+  [> thing | pushable:sausage:not_tip:^ no force:simple:>:sausage:is_countered no force:slip:v:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:^ force:simple:>:sausage:uncountered force:slip:v:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
     // [Rotation A] [Simple]
   [> thing | pushable:sausage:not_tip:^ no force:simple:>:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:^ force:simple:>:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
     // [Rotation A] [Slip]
@@ -254,26 +264,11 @@ late [force:force_type:directions:pushable_type:is_countered] -> []
 late [temp_force_direction:force_type:directions:pushable_type] -> []
 
 
-( Spread moving direction & force within rigid )
-subroutine spread
-  startloop
-    // Moving BUG what if both moving and force need to spread?????
-    pushable_type [orthogonal pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [orthogonal pushable:pushable_type:is_tip:< spread:pushable_type | orthogonal pushable:pushable_type:is_tip:> spread_next:pushable_type]
-    // Not moving
-    pushable_type [stationary pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [stationary pushable:pushable_type:is_tip:< spread:pushable_type | stationary pushable:pushable_type:is_tip:> spread_next:pushable_type]
-    // Force [BUG?] switching the last two objects breaks the rule (when there is a tag as a rule prefix)
-    force_type directions pushable_type is_countered [force:force_type:directions:pushable_type:is_countered pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [force:force_type:directions:pushable_type:is_countered pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> force:force_type:directions:pushable_type:is_countered spread_next:pushable_type]
-    // No force
-    force_type directions pushable_type is_countered [pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no force:force_type:directions:pushable_type:is_countered no spread:pushable_type] -> [pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no force:force_type:directions:pushable_type:is_countered spread_next:pushable_type]
-    
-    pushable_type [spread_next:pushable_type] -> [spread:pushable_type]
-  endloop
-  [spread:pushable_type] -> []
 
 
 subroutine calculate_moving_direction
-  // First, clear moving direction
-  pushable_type [orthogonal pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type] -> [stationary pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type]
+  // First, save and clear old moving direction
+  pushable_type [> pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type] -> [stationary pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type old_moving_direction:>]
   // Calculate moving direction for each type of force (temp_force_direction:force_type:directions)
   // TODO add more additional rules
   force_type directions pushable_type [force:force_type:directions:pushable_type:uncountered calculate_moving_direction:pushable_type no force:force_type:opposite_direction:pushable_type:uncountered no force:force_type:clockwise_direction:pushable_type:uncountered no force:force_type:counter_clockwise_direction:pushable_type:uncountered] -> [temp_force_direction:force_type:directions:pushable_type force:force_type:directions:pushable_type:uncountered calculate_moving_direction:pushable_type]
@@ -283,11 +278,45 @@ subroutine calculate_moving_direction
   // BUG[REPORTED] the "no" rule is not expanded with a pushable_type rule prefix (so I'm doing it manually)
   pushable_type [pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type no temp_force_direction:slip:up:pushable_type no temp_force_direction:slip:right:pushable_type temp_force_direction:simple:>:pushable_type no temp_force_direction:slip:down:pushable_type no temp_force_direction:slip:left:pushable_type] -> [> pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type temp_force_direction:simple:>:pushable_type spread:pushable_type]
   
+  // Clear old_moving_direction, if new direction is the same as it
+  pushable_type [> pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type old_moving_direction:>] -> [> pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type]
   // Clear "temp_force_direction:force_type" & "calculate_moving_direction", add "spread"
   [temp_force_direction:force_type:directions:pushable_type] -> []
   pushable_type [calculate_moving_direction:pushable_type] -> [spread:pushable_type] gosub spread
+  
   // BUG without this dummy line, execution directly exits instead of returning to main thread!! 
-  [pushable:pushable_type:is_tip:directions] -> [pushable:pushable_type:is_tip:directions]
+  [dummy] -> [dummy]
+
+
+
+( Spread moving direction & force within rigid )
+subroutine spread
+  startloop
+    // Spread moving BUG what if both moving and force need to spread?????
+    pushable_type [orthogonal pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [orthogonal pushable:pushable_type:is_tip:< spread:pushable_type | orthogonal pushable:pushable_type:is_tip:> spread_next:pushable_type]
+    // Spread not moving
+    pushable_type [stationary pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [stationary pushable:pushable_type:is_tip:< spread:pushable_type | stationary pushable:pushable_type:is_tip:> spread_next:pushable_type]
+    // Spread force [BUG?] switching the last two objects breaks the rule (when there is a tag as a rule prefix)
+    force_type directions pushable_type is_countered [force:force_type:directions:pushable_type:is_countered pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [force:force_type:directions:pushable_type:is_countered pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> force:force_type:directions:pushable_type:is_countered spread_next:pushable_type]
+    // Spread no force
+    force_type directions pushable_type is_countered [pushable:pushable_type:is_tip:< spread:pushable_type no force:force_type:directions:pushable_type:is_countered | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no force:force_type:directions:pushable_type:is_countered spread_next:pushable_type]
+    // Spread old_moving_direction
+    directions pushable_type [old_moving_direction:directions pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [old_moving_direction:directions pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> old_moving_direction:directions spread_next:pushable_type]
+    
+    pushable_type [spread_next:pushable_type] -> [spread:pushable_type]
+  endloop
+  [spread:pushable_type] -> []
+  
+  // Remove force from pushables in the old moving direction
+  [old_moving_direction:directions] -> [old_moving_direction:directions] gosub remove_force_from_old_moving_direction
+  [dummy]-> [dummy]
+  
+
+
+subroutine remove_force_from_old_moving_direction
+  pushable_type [old_moving_direction:> | pushable:pushable_type:is_tip:directions force:force_type:directions:pushable_type:is_countered no old_moving_direction:>] -> [old_moving_direction:> | stationary pushable:pushable_type:is_tip:directions spread:pushable_type] gosub spread
+  [old_moving_direction:directions] -> []
+
 
 =======     
 LEVELS
@@ -300,10 +329,10 @@ level push
 #..........#
 #..1.......#
 #..i.......#
+##⊂⊃.......#
+#.#⊂⊃......#
 #..........#
 #..........#
-#....⊂⊃....#
-#....⊂⊃....#
 #..........#
 #..........#
 ############
