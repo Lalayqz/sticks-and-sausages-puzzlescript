@@ -33,6 +33,9 @@ up right down left -> right down left up
 directions => counter_clockwise_direction
 up right down left -> left up right down
 
+pushable_type => opposite_pushable_type
+stick sausage -> sausage stick
+
 ========
 OBJECTS
 ========
@@ -179,6 +182,9 @@ transparent
 old_moving_direction:directions
 transparent
 
+pierce:pushable_type
+transparent
+
 dummy
 transparent
 
@@ -216,7 +222,7 @@ pushable_type -> spread:pushable_type, spread_next:pushable_type
 calculate_moving_direction:pushable_type
 
 old_moving_direction:directions
-
+pierce:pushable_type
 dummy
 
 =====
@@ -225,6 +231,8 @@ RULES
 
 // Give force to player
 pushable_type [> pushable:pushable_type:is_tip:directions] -> [> pushable:pushable_type:is_tip:directions force:simple:>:pushable_type:uncountered]
+// Calculate pierce
+[> pushable:stick:tip:> | pushable:sausage:is_tip:directions] -> [> pushable:stick:tip:> pierce:stick | pushable:sausage:is_tip:directions]
 
 startloop
 
@@ -245,15 +253,16 @@ startloop
   [> thing | pushable:sausage:not_tip:v no force:simple:>:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:v force:simple:>:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
     // [Rotation B] [Slip]
   [> thing | pushable:sausage:not_tip:v no force:slip:^:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:v force:slip:^:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
-
+  // Stick in sausage push
+  pushable_type [> pushable:pushable_type:is_tip:directions stationary pushable:opposite_pushable_type:is_tip:directions] -> [> pushable:pushable_type:is_tip:directions pushable:opposite_pushable_type:is_tip:directions force:simple:>:opposite_pushable_type:uncountered calculate_moving_direction:opposite_pushable_type] gosub calculate_moving_direction
 
 
   ( II Blocked )
   
   // Blocked by wall
   force_type pushable_type [force:force_type:>:pushable_type:uncountered > pushable:pushable_type:is_tip:directions | wall] -> [force:force_type:>:pushable_type:countered > pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type | wall] gosub calculate_moving_direction
-  // Blocked by another pushable
-  force_type pushable_type [force:force_type:>:pushable_type:uncountered > pushable:pushable_type:is_tip:directions | force:force_type:>:pushable_type_2:countered] -> [force:force_type:>:pushable_type:countered > pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type | force:force_type:>:pushable_type_2:countered] gosub calculate_moving_direction
+  // Blocked by another pushable, when that another pushable has a countered force of that direction
+  force_type pushable_type [force:force_type:>:pushable_type:uncountered > pushable:pushable_type:is_tip:directions no pierce:pushable_type | force:force_type:>:pushable_type_2:countered] -> [force:force_type:>:pushable_type:countered > pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type | force:force_type:>:pushable_type_2:countered] gosub calculate_moving_direction
   
 endloop
 
@@ -262,7 +271,8 @@ endloop
 // Remove forces
 late [force:force_type:directions:pushable_type:is_countered] -> []
 late [temp_force_direction:force_type:directions:pushable_type] -> []
-
+// Remove pierce
+late [pierce:pushable_type] -> []
 
 
 
@@ -283,16 +293,15 @@ subroutine calculate_moving_direction
   // Clear "temp_force_direction:force_type" & "calculate_moving_direction", add "spread"
   [temp_force_direction:force_type:directions:pushable_type] -> []
   pushable_type [calculate_moving_direction:pushable_type] -> [spread:pushable_type] gosub spread
-  
-  // BUG without this dummy line, execution directly exits instead of returning to main thread!! 
-  [dummy] -> [dummy]
+  // Calculate pierce
+  [> pushable:stick:tip:> | pushable:sausage:is_tip:directions] -> [> pushable:stick:tip:> pierce:stick | pushable:sausage:is_tip:directions]
 
 
 
 ( Spread moving direction & force within rigid )
 subroutine spread
   startloop
-    // Spread moving BUG what if both moving and force need to spread?????
+    // Spread moving
     pushable_type [orthogonal pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [orthogonal pushable:pushable_type:is_tip:< spread:pushable_type | orthogonal pushable:pushable_type:is_tip:> spread_next:pushable_type]
     // Spread not moving
     pushable_type [stationary pushable:pushable_type:is_tip:< spread:pushable_type | pushable:pushable_type:is_tip:> no spread:pushable_type] -> [stationary pushable:pushable_type:is_tip:< spread:pushable_type | stationary pushable:pushable_type:is_tip:> spread_next:pushable_type]
