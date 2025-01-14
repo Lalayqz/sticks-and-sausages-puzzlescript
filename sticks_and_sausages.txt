@@ -14,11 +14,12 @@ TAGS
 pushable_type = stick sausage
 is_tip = tip not_tip
 
-force_type = simple slip
+force_type = simple slip insert
 is_countered = uncountered countered
 
 
 pushable_type_2 = pushable_type
+force_type_2 = force_type
 
 ========
 MAPPINGS
@@ -40,8 +41,9 @@ stick sausage -> sausage stick
 OBJECTS
 ========
 
-( stick_simple  sausage_simple
-       /        sausage_slip  )
+( [Force Legend]
+stick_simple              \            stick_insert
+sausage_simple sausage_slip  sausage_insert )
 
 background 
 green     
@@ -107,14 +109,14 @@ black
 ..0..
 rot:up:> translate:up:5
 
-force:slip:directions:sausage:uncountered
-blue
+force:insert:directions:stick:uncountered
+red
 ..0..
 .000.
 0.0.0
 ..0..
 ..0..
-rot:up:> translate:right:5 
+rot:up:> translate:up:5 translate:right:5
 
 force:simple:directions:sausage:uncountered
 black
@@ -123,19 +125,47 @@ black
 0.0.0
 ..0..
 ..0..
-rot:up:> translate:right:5 translate:up:5
+rot:up:>
+
+force:slip:directions:sausage:uncountered
+blue
+..0..
+.000.
+0.0.0
+..0..
+..0..
+rot:up:> translate:right:2
+
+force:insert:directions:sausage:uncountered
+red
+..0..
+.000.
+0.0.0
+..0..
+..0..
+rot:up:> translate:right:5
 
 force:simple:directions:stick:countered
 grey
 copy:force:simple:directions:stick:uncountered
 
-force:slip:directions:sausage:countered
-lightblue
-copy:force:slip:directions:sausage:uncountered
+force:insert:directions:stick:countered
+orange
+copy:force:insert:directions:stick:uncountered
 
 force:simple:directions:sausage:countered
 grey
 copy:force:simple:directions:sausage:uncountered
+
+force:slip:directions:sausage:countered
+lightblue
+copy:force:slip:directions:sausage:uncountered
+
+force:insert:directions:sausage:countered
+orange
+copy:force:insert:directions:sausage:uncountered
+
+
 
 temp_force_direction:force_type:directions:pushable_type
 transparent
@@ -179,10 +209,25 @@ orange
 calculate_moving_direction:pushable_type
 transparent
 
+calculate_moving_direction:stick
+green
+00
+00
+translate:up:7 translate:right:2
+
+calculate_moving_direction:sausage
+purple
+00
+00
+translate:up:5 translate:right:2
+
 old_moving_direction:directions
 transparent
 
 pierce:pushable_type
+transparent
+
+input:directions
 transparent
 
 dummy
@@ -219,42 +264,47 @@ force_type directions pushable_type -> force:force_type:directions:pushable_type
 force_type pushable_type -> temp_force_direction:force_type:directions:pushable_type
 
 pushable_type -> spread:pushable_type, spread_next:pushable_type
-calculate_moving_direction:pushable_type
+pushable_type -> calculate_moving_direction:pushable_type
 
 old_moving_direction:directions
 pierce:pushable_type
+input:directions
 dummy
 
 =====
 RULES     
 =====
 
-// Give force to player
-pushable_type [> pushable:pushable_type:is_tip:directions] -> [> pushable:pushable_type:is_tip:directions force:simple:>:pushable_type:uncountered]
+// Save input direction on player
+[> player] -> [> player input:>]
 // Calculate pierce
 [> pushable:stick:tip:> | pushable:sausage:is_tip:directions] -> [> pushable:stick:tip:> pierce:stick | pushable:sausage:is_tip:directions]
 
 startloop
 
+  // Give force to player (In the beginning of process, or when subroutine remove_force_from_old_moving_direction removed the force)
+  [input:> player no force:insert:>:stick:is_countered] -> [input:> player force:insert:>:stick:uncountered]
+
   ( I Push )
   
-  // Simple push (Calculate moving direction right now, not waiting for other tiles that need calculations and calculate them together. This is because when spreading, 2 tiles cannot spread into each other because they are both spread sources)
-  [> thing | pushable:sausage:not_tip:< no force:simple:>:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:< force:simple:>:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
+  // Insert push (Calculate moving direction right now, not waiting for other tiles that need calculations and calculate them together. This is because when spreading, 2 tiles cannot spread into each other because they are both spread sources)
+  pushable_type [> pushable:pushable_type:is_tip:directions pushable:opposite_pushable_type:is_tip:directions no force:insert:>:opposite_pushable_type:uncountered] -> [> pushable:pushable_type:is_tip:directions pushable:opposite_pushable_type:is_tip:directions force:insert:>:opposite_pushable_type:uncountered calculate_moving_direction:opposite_pushable_type] gosub calculate_moving_direction
+  // Simple push
+  [> thing no pushable:pushable_type:is_tip:< | pushable:sausage:not_tip:< no force:simple:>:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:< force:simple:>:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
   // Slip push
     // [Rotation A] [Simple + Slip] (The following 2 rules already did this job, but this rule is added to make the rule process shorter)
-  [> thing | pushable:sausage:not_tip:^ no force:simple:>:sausage:is_countered no force:slip:v:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:^ force:simple:>:sausage:uncountered force:slip:v:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
+  [> thing no pushable:pushable_type:is_tip:< | pushable:sausage:not_tip:^ no force:simple:>:sausage:is_countered no force:slip:v:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:^ force:simple:>:sausage:uncountered force:slip:v:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
     // [Rotation A] [Simple]
-  [> thing | pushable:sausage:not_tip:^ no force:simple:>:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:^ force:simple:>:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
+  [> thing no pushable:pushable_type:is_tip:< | pushable:sausage:not_tip:^ no force:simple:>:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:^ force:simple:>:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
     // [Rotation A] [Slip]
-  [> thing | pushable:sausage:not_tip:^ no force:slip:v:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:^ force:slip:v:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
+  [> thing no pushable:pushable_type:is_tip:< | pushable:sausage:not_tip:^ no force:slip:v:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:^ force:slip:v:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
     // [Rotation B] [Simple + Slip]
-  [> thing | pushable:sausage:not_tip:v no force:simple:>:sausage:is_countered no force:slip:^:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:v force:simple:>:sausage:uncountered force:slip:^:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
+  [> thing no pushable:pushable_type:is_tip:< | pushable:sausage:not_tip:v no force:simple:>:sausage:is_countered no force:slip:^:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:v force:simple:>:sausage:uncountered force:slip:^:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
     // [Rotation B] [Simple]
-  [> thing | pushable:sausage:not_tip:v no force:simple:>:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:v force:simple:>:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
+  [> thing no pushable:pushable_type:is_tip:< | pushable:sausage:not_tip:v no force:simple:>:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:v force:simple:>:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
     // [Rotation B] [Slip]
-  [> thing | pushable:sausage:not_tip:v no force:slip:^:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:v force:slip:^:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
-  // Stick in sausage push
-  pushable_type [> pushable:pushable_type:is_tip:directions stationary pushable:opposite_pushable_type:is_tip:directions] -> [> pushable:pushable_type:is_tip:directions pushable:opposite_pushable_type:is_tip:directions force:simple:>:opposite_pushable_type:uncountered calculate_moving_direction:opposite_pushable_type] gosub calculate_moving_direction
+  [> thing no pushable:pushable_type:is_tip:< | pushable:sausage:not_tip:v no force:slip:^:sausage:is_countered] -> [> thing | pushable:sausage:not_tip:v force:slip:^:sausage:uncountered calculate_moving_direction:sausage] gosub calculate_moving_direction
+
 
 
   ( II Blocked )
@@ -262,7 +312,7 @@ startloop
   // Blocked by wall
   force_type pushable_type [force:force_type:>:pushable_type:uncountered > pushable:pushable_type:is_tip:directions | wall] -> [force:force_type:>:pushable_type:countered > pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type | wall] gosub calculate_moving_direction
   // Blocked by another pushable, when that another pushable has a countered force of that direction
-  force_type pushable_type [force:force_type:>:pushable_type:uncountered > pushable:pushable_type:is_tip:directions no pierce:pushable_type | force:force_type:>:pushable_type_2:countered] -> [force:force_type:>:pushable_type:countered > pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type | force:force_type:>:pushable_type_2:countered] gosub calculate_moving_direction
+  force_type pushable_type [force:force_type:>:pushable_type:uncountered > pushable:pushable_type:is_tip:directions no pierce:pushable_type | force:force_type_2:>:pushable_type_2:countered] -> [force:force_type:>:pushable_type:countered > pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type | force:force_type_2:>:pushable_type_2:countered] gosub calculate_moving_direction
   
 endloop
 
@@ -282,11 +332,13 @@ subroutine calculate_moving_direction
   // Calculate moving direction for each type of force (temp_force_direction:force_type:directions)
   // TODO add more additional rules
   force_type directions pushable_type [force:force_type:directions:pushable_type:uncountered calculate_moving_direction:pushable_type no force:force_type:opposite_direction:pushable_type:uncountered no force:force_type:clockwise_direction:pushable_type:uncountered no force:force_type:counter_clockwise_direction:pushable_type:uncountered] -> [temp_force_direction:force_type:directions:pushable_type force:force_type:directions:pushable_type:uncountered calculate_moving_direction:pushable_type]
-  // Calculate final moving direction (slip push)
-  pushable_type [pushable:pushable_type:is_tip:directions temp_force_direction:slip:>:pushable_type calculate_moving_direction:pushable_type] -> [> pushable:pushable_type:is_tip:directions temp_force_direction:slip:>:pushable_type calculate_moving_direction:pushable_type spread:pushable_type]
-  // Calculate final moving direction (simple push)
+  // Calculate final moving direction (using insert push)
+  pushable_type [pushable:pushable_type:is_tip:directions temp_force_direction:insert:>:pushable_type calculate_moving_direction:pushable_type] -> [> pushable:pushable_type:is_tip:directions temp_force_direction:insert:>:pushable_type calculate_moving_direction:pushable_type spread:pushable_type]
+  // Calculate final moving direction (using slip push)
+  pushable_type [pushable:pushable_type:is_tip:directions temp_force_direction:slip:>:pushable_type calculate_moving_direction:pushable_type no temp_force_direction:insert:up:pushable_type no temp_force_direction:insert:right:pushable_type no temp_force_direction:insert:down:pushable_type no temp_force_direction:insert:left:pushable_type] -> [> pushable:pushable_type:is_tip:directions temp_force_direction:slip:>:pushable_type calculate_moving_direction:pushable_type spread:pushable_type]
+  // Calculate final moving direction (using simple push)
   // BUG[REPORTED] the "no" rule is not expanded with a pushable_type rule prefix (so I'm doing it manually)
-  pushable_type [pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type no temp_force_direction:slip:up:pushable_type no temp_force_direction:slip:right:pushable_type temp_force_direction:simple:>:pushable_type no temp_force_direction:slip:down:pushable_type no temp_force_direction:slip:left:pushable_type] -> [> pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type temp_force_direction:simple:>:pushable_type spread:pushable_type]
+  pushable_type [pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type temp_force_direction:simple:>:pushable_type no temp_force_direction:insert:up:pushable_type no temp_force_direction:insert:right:pushable_type no temp_force_direction:insert:down:pushable_type no temp_force_direction:insert:left:pushable_type no temp_force_direction:slip:up:pushable_type no temp_force_direction:slip:right:pushable_type no temp_force_direction:slip:down:pushable_type no temp_force_direction:slip:left:pushable_type] -> [> pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type temp_force_direction:simple:>:pushable_type spread:pushable_type]
   
   // Clear old_moving_direction, if new direction is the same as it
   pushable_type [> pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type old_moving_direction:>] -> [> pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type]
@@ -322,8 +374,15 @@ subroutine spread
   
 
 
+( How to deal with blocked objects:
+In reality, forces are a result of two objects constantly squeezing into each other. When an object is blocked, due to the order of their positions (there is an position order of the squeezed side even if they are all inserted into each other), the object in source direction is blocked, and the object in destination direction is no longer squeezed.
+So the most realistic way to implement the rule is making a tiny squeeze from the player each loop and then spread the squeeze, while the object blocked last loop are still blocked and the squeezes last loop won't be carried to next loop.
+However, this game uses a "self-correcting" way to implement the rule. )
 subroutine remove_force_from_old_moving_direction
-  pushable_type [old_moving_direction:> | pushable:pushable_type:is_tip:directions force:force_type:directions:pushable_type:is_countered no old_moving_direction:>] -> [old_moving_direction:> | stationary pushable:pushable_type:is_tip:directions spread:pushable_type] gosub spread
+  // Remove "insert" force from this tile
+  pushable_type [old_moving_direction:> pushable:pushable_type:is_tip:directions force:insert:>:pushable_type:is_countered] -> [old_moving_direction:> stationary pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type] gosub calculate_moving_direction
+  // Remove all force from facing tile in direction
+  pushable_type [old_moving_direction:> | pushable:pushable_type:is_tip:directions force:force_type:directions:pushable_type:is_countered no old_moving_direction:>] -> [old_moving_direction:> | stationary pushable:pushable_type:is_tip:directions calculate_moving_direction:pushable_type] gosub calculate_moving_direction
   [old_moving_direction:directions] -> []
 
 
