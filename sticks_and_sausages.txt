@@ -29,6 +29,8 @@ which_space = this_space next_space
 pushable_type_2 = pushable_type
 force_type_2 = force_type
 
+process_round_count = first second
+
 ========
 MAPPINGS
 ========
@@ -85,8 +87,23 @@ fixed:floor_0
 2222222222
 
 fixed:floor_1
-#12A52D #0F8E27 #63381D
-copy: fixed:floor_0 translate: up:5
+#12A52D #0F8E27 #0D7A21 #63381D
+1000000001
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+1000000001
+2222222222
+2222222222
+3333333333
+3333333333
+3333333333
+translate: up:5
 
 fixed:floor_2
 brown brown #63381D
@@ -97,6 +114,8 @@ transparent
 
 pushable:stick:tip_or_packed:up:floor_0
 orange brown
+..........
+..........
 ...0......
 ...00.....
 ...000....
@@ -109,9 +128,12 @@ orange brown
 ...0000...
 ...1111...
 ...1111...
+..........
 
 pushable:stick:not_tip_or_packed:down:floor_0
 orange brown
+..........
+..........
 ...0000...
 ...0000...
 ...0000...
@@ -124,6 +146,7 @@ orange brown
 ...0000...
 ...1111...
 ...1111...
+..........
 
 pushable:stick:is_tip_or_packed:directions:floor_1
 orange brown
@@ -147,6 +170,7 @@ orange brown
 ...0000...
 ...1111...
 ...1111...
+..........
 
 _stick_bottom:floor_1
 orange brown
@@ -158,7 +182,9 @@ copy: _stick_bottom:floor_1 translate: up:5
 
 
 pushable:sausage:not_tip_or_packed:up:floor_0
-lightred darkred
+#e06f8b #cc6680 #994d60
+..........
+..........
 ..000000..
 ..000000..
 0000000000
@@ -174,7 +200,7 @@ lightred darkred
 1111111111
 
 pushable:sausage:not_tip_or_packed:down:floor_0
-lightred darkred
+#e06f8b #cc6680 #994d60
 0000000000
 0000000000
 0000000000
@@ -188,9 +214,13 @@ lightred darkred
 .11111111.
 ..111111..
 ...1111...
+..........
+..........
 
 pushable:sausage:not_tip_or_packed:left:floor_0
-lightred darkred
+#e06f8b #cc6680 #994d60
+..........
+..........
 ..00000000
 .000000000
 .000000000
@@ -199,14 +229,17 @@ lightred darkred
 0000000000
 0000000000
 1000000000
-1000000000
-1100000000
-1111111111
-.111111111
-..11111111
+2111111111
+2211111111
+.222222222
+..22222222
+..........
+
 
 pushable:sausage:not_tip_or_packed:right:floor_0
-lightred darkred
+#e06f8b #cc6680 #994d60
+..........
+..........
 00000000..
 000000000.
 000000000.
@@ -215,18 +248,18 @@ lightred darkred
 0000000000
 0000000000
 0000000001
-0000000001
-0000000011
 1111111111
-111111111.
-11111111..
+1111111122
+222222222.
+22222222..
+..........
 
 pushable:sausage:is_tip_or_packed:directions:floor_1
-lightred darkred
+#e06f8b #cc6680 #994d60
 copy: pushable:sausage:is_tip_or_packed:directions:floor_0 translate: up:5
 
 pushable:sausage:is_tip_or_packed:directions:floor_2
-lightred darkred
+#e06f8b #cc6680 #994d60
 copy: pushable:sausage:is_tip_or_packed:directions:floor_1 translate: up:5
 
 goal:floor
@@ -364,6 +397,9 @@ orange
 copy: _force:insert:directions:sausage:floor:uncountered
 
 
+_process_round:process_round_count
+transparent
+
 _temp_force_direction:force_type:directions:pushable_type:floor
 transparent
 
@@ -404,18 +440,21 @@ LEGEND
 
 thing = pushable:pushable_type:is_tip_or_packed:directions:floor or fixed:floor
 
+O = background
 _ = fixed:floor_0
 . = fixed:floor_0 and fixed:floor_1
 # = fixed:floor_0 and fixed:floor_1 and fixed:floor_2
 
-O = fixed:floor_0 and fixed:floor_1 and goal:floor_1
+X = fixed:floor_0 and fixed:floor_1 and goal:floor_1
 
 ∩ = fixed:floor_0 and fixed:floor_1 and pushable:sausage:not_tip_or_packed:up:floor_2
 U = fixed:floor_0 and fixed:floor_1 and pushable:sausage:not_tip_or_packed:down:floor_2
-< = fixed:floor_0 and fixed:floor_1 and pushable:sausage:not_tip_or_packed:left:floor_2
-> = fixed:floor_0 and fixed:floor_1 and pushable:sausage:not_tip_or_packed:right:floor_2
+{ = fixed:floor_0 and fixed:floor_1 and pushable:sausage:not_tip_or_packed:left:floor_2
+} = fixed:floor_0 and fixed:floor_1 and pushable:sausage:not_tip_or_packed:right:floor_2
 t = fixed:floor_0 and fixed:floor_1 and pushable:stick:tip_or_packed:up:floor_2
 b = fixed:floor_0 and fixed:floor_1 and pushable:stick:not_tip_or_packed:down:floor_2
+
+% = _process_round:first
 
 player = pushable:stick:is_tip_or_packed:directions:floor
 
@@ -444,6 +483,7 @@ force_type pushable_type floor -> _temp_force_direction:force_type:directions:pu
 pushable_type floor -> _spread:pushable_type:floor, _spread_next:pushable_type:floor
 pushable_type floor -> _calculate_moving_direction:pushable_type:floor
 
+_process_round:process_round_count
 _insert_force_source:pushable_type:floor
 pushable_type floor -> _old_moving_direction:pushable_type:floor:directions
 _pierce:pushable_type:floor:directions
@@ -452,9 +492,19 @@ _input:directions
 floor -> _supported:floor
 floor -> _fall:floor
 
+======
+SOUNDS
+======
+
+sfx0 81700105
+
+
 =====
 RULES     
 =====
+
+// Change _process_round:first into _process_round:second
+[_fall:floor] [_process_round:first] -> [_fall:floor] [_process_round:second]
 
 // Clear temp sprites
 [_stick_bottom:floor] -> []
@@ -509,9 +559,9 @@ startloop
   // Blocked by another pushable, when that another pushable has a countered force of that direction
     // [Blocked by same pushable_type in opposing space]
   force_type pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor | _force:force_type_2:>:pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:pushable_type:floor:countered] gosub calculate_moving_direction
-    // [Blocked by opposite pushable_type in opposing space, unless current pushable has pierce or through_hole (because these two only apply to opposite pushable_type)] ( [TODO] do i really need through_hole???)
+    // [Blocked by opposite pushable_type in opposing space, unless current pushable has pierce or through_hole:...:next_space (because these two only apply to opposite pushable_type)] ( [TODO] do i really need through_hole???)
   pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor no _pierce:pushable_type:floor:> no _through_hole:pushable_type:floor:>:next_space | _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
-    // [Blocked by a inserted pushable in the same space]
+    // [Blocked by a inserted pushable in the same space, unless current pushable has pierce or through_hole:...:this_space]
   pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:this_space _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
 endloop
 
@@ -528,8 +578,11 @@ late [_insert_force_source:pushable_type:floor] -> []
 late [_pierce:pushable_type:floor:directions] -> []
 late [_through_hole:pushable_type:floor:directions:which_space] -> []
 
-
+(
 (Fall)
+(There could be multiple falls.
+If the first fall is valid, then fires another process turn. But later valid falls don't fire that.
+This difference means that I have to take the logic of the first fall out of the fall loop.)
 late pushable_type is_tip_or_packed directions high_floor [pushable:pushable_type:is_tip_or_packed:directions:high_floor _fall:high_floor] -> [pushable:pushable_type:is_tip_or_packed:directions:lower_floor _fall:high_floor]
 late [_fall:floor] -> []
 (Calculate supported:floor)
@@ -542,9 +595,37 @@ late [_fall:floor] -> []
 (Calculate fall:floor)
 late floor [pushable:pushable_type:is_tip_or_packed:directions:floor no _supported:floor] -> [pushable:pushable_type:is_tip_or_packed:directions:floor _fall:floor] again
 late [_supported:floor] -> []
+)
+
+(Don't use startloop endloop for late rules! It somehow makes the main loop unable to loop.)
+(Fall related stuff)
+startloop
+  (Calculate supported:floor)
+    // Supported by fixed below
+    late low_floor [fixed:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor] -> [fixed:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor _supported:higher_floor]
+    // Supported by supported below (There is no "supported by insert" because they share the same supported:floor)
+    + late low_floor [_supported:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor] -> [_supported:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor _supported:higher_floor]
+    // Spread supported
+    + late pushable_type floor [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor] -> [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor _supported:floor]
+  (Calculate fall:floor, if it's first process round then do "again")
+  late floor [pushable:pushable_type:is_tip_or_packed:directions:floor no _supported:floor] [_process_round:first] -> [pushable:pushable_type:is_tip_or_packed:directions:floor _fall:floor] [_process_round:first] again
+  late floor [pushable:pushable_type:is_tip_or_packed:directions:floor no _supported:floor] [_process_round:second] -> [pushable:pushable_type:is_tip_or_packed:directions:floor _fall:floor] [_process_round:second]
+  (Fall)
+  // Fall into space below
+  late pushable_type is_tip_or_packed directions high_floor [pushable:pushable_type:is_tip_or_packed:directions:high_floor _fall:high_floor] [_process_round:second] -> [pushable:pushable_type:is_tip_or_packed:directions:lower_floor _fall:high_floor] [_process_round:second]
+  // Fall into void below
+  late [pushable:pushable_type:is_tip_or_packed:directions:floor_0 _fall:floor_0] [_process_round:second] -> [_fall:floor_0] [_process_round:second] sfx0
+  (Fall over)
+  late [_fall:floor] [_process_round:second] -> [] [_process_round:second]
+endloop
+// _supported:floor needs to be cleared if it manages to get to second process round. Does not need to be cleared otherwise but I cleared it in both case.
+late [_supported:floor] -> []
+
+
 
 
 (Add temp sprites)
+late floor [pushable:stick:tip_or_packed:up:floor] -> [pushable:stick:tip_or_packed:up:floor _stick_bottom:floor]
 late floor [pushable:stick:not_tip_or_packed:down:floor] -> [pushable:stick:not_tip_or_packed:down:floor _stick_bottom:floor]
 
 
@@ -595,7 +676,8 @@ subroutine spread
 ( How to deal with blocked objects:
 In reality, forces are a result of two objects constantly squeezing into each other. When an object is blocked, due to the order of their positions (there is an position order of the squeezed side even if they are all inserted into each other), the object in source direction is blocked, and the object in destination direction is no longer squeezed.
 So the most realistic way to implement the rule is making a tiny squeeze from the player each loop and then spread the squeeze, while the object blocked last loop are still blocked and the squeezes last loop won't be carried to next loop.
-However, this game uses a "self-correcting" way to implement the rule. )
+But does it work? Refer to the 3rd case in edge_cases.png (not public).
+This game uses another "self-correcting" way to implement the rule. )
 subroutine remove_force_from_old_moving_direction
   // Remove outgoing "insert" force
   pushable_type floor [_old_moving_direction:pushable_type:floor:> pushable:opposite_pushable_type:is_tip_or_packed:directions:floor _force:insert:>:opposite_pushable_type:floor:is_countered _insert_force_source:pushable_type:floor] -> [_old_moving_direction:pushable_type:floor:> stationary pushable:opposite_pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:opposite_pushable_type:floor] gosub calculate_moving_direction
@@ -610,17 +692,17 @@ LEVELS
 section push
 level push
 
-##############
+%#############
 ##############
 ##############
 ##......∩...##
 ##......U...##
-##...#<><>..##
-###.....<><>##
-##.#....t...##
-##......b...##
-##.OO.___...##
-##.OO.___...##
-##....___...##
+##...#{}{}..##
+###.....{}{}##
+##.#OO..t...##
+##..OO..b...##
+##.XX.___...##
+##.XX.___{}.##
+##..{}___.{}##
 ##############
 ##############
