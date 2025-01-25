@@ -434,6 +434,9 @@ transparent
 _fall:floor
 transparent
 
+_do_again
+transparent
+
 =======
 LEGEND
 =======
@@ -491,161 +494,156 @@ pushable_type directions which_space -> _through_hole:pushable_type:floor:direct
 _input:directions
 floor -> _supported:floor
 floor -> _fall:floor
+_do_again
 
 ======
 SOUNDS
 ======
 
-sfx0 81700105
+sfx0 81019907 ( Fall onto ground )
+sfx1 81700105 ( Fall into void )
 
 
 =====
 RULES     
 =====
 
-// Change _process_round:first into _process_round:second
-[_fall:floor] [_process_round:first] -> [_fall:floor] [_process_round:second]
+// I'm putting late rules here because of issue #145.
+( Remove temp stuff )
+( - Remove input )
+late [_input:directions] -> []
+( - Remove forces )
+late [_force:force_type:directions:pushable_type:floor:is_countered] -> []
+late [_temp_force_direction:force_type:directions:pushable_type:floor] -> []
+( - Remove insert_force_source )
+late [_insert_force_source:pushable_type:floor] -> []
+( - Remove pierce & through_hole )
+late [_pierce:pushable_type:floor:directions] -> []
+late [_through_hole:pushable_type:floor:directions:which_space] -> []
 
-// Clear temp sprites
+
+( Fall related stuff )
+// There could be multiple falls.
+// If the first fall is valid, then fires another process turn. But later valid falls don't fire that.
+// This difference means that I have to take the logic of the first fall out of the fall loop.
+startloop
+  (Calculate supported:floor)
+    ( - Supported by fixed below )
+    late low_floor [fixed:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor] -> [fixed:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor _supported:higher_floor]
+    ( - Supported by supported below )
+    // There is no "supported by insert" because they share the same supported:floor
+    + late low_floor [_supported:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor] -> [_supported:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor _supported:higher_floor]
+    ( - Spread supported )
+    + late pushable_type floor [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor] -> [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor _supported:floor]
+  ( Calculate fall:floor, if it's first process round then do "again" )
+  late floor [pushable:pushable_type:is_tip_or_packed:directions:floor no _supported:floor] [_process_round:first] -> [pushable:pushable_type:is_tip_or_packed:directions:floor _fall:floor] [_process_round:first _do_again]
+  late floor [pushable:pushable_type:is_tip_or_packed:directions:floor no _supported:floor] [_process_round:second] -> [pushable:pushable_type:is_tip_or_packed:directions:floor _fall:floor] [_process_round:second]
+  ( Fall )
+  ( - Fall into space below )
+  late pushable_type is_tip_or_packed directions high_floor [pushable:pushable_type:is_tip_or_packed:directions:high_floor _fall:high_floor] [_process_round:second] -> [pushable:pushable_type:is_tip_or_packed:directions:lower_floor _fall:high_floor] [_process_round:second]
+  ( - Fall into void below )
+  late [pushable:pushable_type:is_tip_or_packed:directions:floor_0 _fall:floor_0] [_process_round:second] -> [_fall:floor_0] [_process_round:second] sfx1
+  ( Fall over )
+  late [_fall:floor] [_process_round:second] -> [] [_process_round:second]
+endloop
+// _supported:floor needs to be cleared if it manages to get to second process round. Does not need to be cleared otherwise but I cleared it in both case.
+late [_supported:floor] -> []
+( Return to first round )
+late [_process_round:second] -> [_process_round:first]
+( Prepare for sencond round )
+// I can't turn _process_round:first into _process_round:second in the loop so I introduce a temp variable "do_again" to do that here.
+late [_do_again] [_process_round:first] -> [] [_process_round:second] again
+
+
+( Add temp sprites )
+late floor [pushable:stick:tip_or_packed:up:floor] -> [pushable:stick:tip_or_packed:up:floor _stick_bottom:floor]
+late floor [pushable:stick:not_tip_or_packed:down:floor] -> [pushable:stick:not_tip_or_packed:down:floor _stick_bottom:floor]
+
+
+
+( Clear temp sprites )
 [_stick_bottom:floor] -> []
 
-// Calculate goal borders
+( Calculate goal borders )
 floor [goal:floor | no goal:floor_x ] -> [goal:floor goal_border:>:floor | goal_border:<:floor]
 
 
-// Save input direction on player and give force
+( Save input direction on player and give force )
 floor [> pushable:stick:is_tip_or_packed:directions:floor] -> [> pushable:stick:is_tip_or_packed:directions:floor _input:> _force:insert:>:stick:floor:uncountered]
-// Calculate pierce
+( Calculate pierce )
 floor [> pushable:stick:tip_or_packed:>:floor | pushable:sausage:not_tip_or_packed:directions:floor] -> [> pushable:stick:tip_or_packed:>:floor _pierce:stick:floor:> | pushable:sausage:not_tip_or_packed:directions:floor]
-// Calculate through_hole
-  // Calculate through_hole:...:this_space
+( Calculate through_hole )
+  ( - Calculate through_hole:...:this_space )
 floor [pushable:stick:is_tip_or_packed:>:floor pushable:sausage:not_tip_or_packed:directions:floor] -> [pushable:stick:is_tip_or_packed:>:floor pushable:sausage:not_tip_or_packed:directions:floor _through_hole:stick:floor:>:this_space _through_hole:stick:floor:<:this_space _through_hole:sausage:floor:>:this_space _through_hole:sausage:floor:<:this_space]
-  // Calculate through_hole:...:next_space
+  ( - Calculate through_hole:...:next_space )
 floor [pushable:stick:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:directions:floor] -> [pushable:stick:is_tip_or_packed:<:floor _through_hole:stick:floor:>:next_space | pushable:sausage:not_tip_or_packed:directions:floor _through_hole:sausage:floor:<:next_space]
 
 
 startloop
-  // Give force to player (When subroutine remove_force_from_old_moving_direction removed the force)
+  ( Give force to player ) // When subroutine remove_force_from_old_moving_direction removed the force .
   floor [_input:> pushable:stick:is_tip_or_packed:directions:floor no _force:insert:>:stick:floor:is_countered] -> [_input:> pushable:stick:is_tip_or_packed:directions:floor _force:insert:>:stick:floor:uncountered _calculate_moving_direction:stick:floor] gosub calculate_moving_direction
 
   ( I Push )
   
-  // Insert push (Don't give outgoing force when there is an incoming force between the two?no insert_force_source:pushable_type)
-  (Calculate moving direction right now, not waiting for other tiles that need calculations and calculate them together. This is because when spreading, 2 tiles wont't spread into each other because they are both spread sources)
+  ( - Insert push )
+  // Don't give outgoing force when there is an incoming force between the two?no insert_force_source:pushable_type
+  // Calculate moving direction right now, not waiting for other tiles that need calculations and calculate them together. This is because when spreading, 2 tiles wont't spread into each other because they are both spread sources.
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor pushable:opposite_pushable_type:is_tip_or_packed:directions:floor no _force:insert:>:opposite_pushable_type:floor:is_countered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor pushable:opposite_pushable_type:is_tip_or_packed:directions:floor _force:insert:>:opposite_pushable_type:floor:uncountered _insert_force_source:pushable_type:floor _calculate_moving_direction:opposite_pushable_type:floor] gosub calculate_moving_direction
-  ( [TODO?] If the object you are pushing is moving in the same direction driven by an insert force, then it should not be pushed (because you can't touch it!). This is implemented by adding "no force:insert:>:sausage:uncountered" in the following rules, which is only a makeshift, and only works when there are no multiple objects & no strangely-shaped objects. )
-  // Push opposing sausage
+  // [TODO?] If the object you are pushing is moving in the same direction driven by an insert force, then it should not be pushed (because you can't touch it!). This is implemented by adding "no force:insert:>:sausage:uncountered" in the following rules, which is only a makeshift, and only works when there are no multiple objects & no strangely-shaped objects.
+  ( - Push opposing sausage )
   pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:<:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:<:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
-  // Push side sausage
-    // [Rotation A] [Simple + Slip] (The following 2 rules already did this job, but this rule is added to make the rule process shorter)
+  ( - Push side sausage )
+    ( [Rotation A] [Simple + Slip] )
+    // The following 2 rules already did this job, but this rule is added to make the rule process shorter
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:^:floor no _force:simple:>:sausage:floor:is_countered no _force:slip:v:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:simple:>:sausage:floor:uncountered _force:slip:v:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
-    // [Rotation A] [Simple]
+    ( [Rotation A] [Simple] )
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:^:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
-    // [Rotation A] [Slip]
+    ( [Rotation A] [Slip] )
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:^:floor no _force:slip:v:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:slip:v:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
-    // [Rotation B] [Simple + Slip]
+    ( [Rotation B] [Simple + Slip] )
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:v:floor no _force:simple:>:sausage:floor:is_countered no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:simple:>:sausage:floor:uncountered _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
-    // [Rotation B] [Simple]
+    ( [Rotation B] [Simple] )
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:v:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
-    // [Rotation B] [Slip]
+    ( [Rotation B] [Slip] )
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:v:floor no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
 
 
 
   ( II Blocked )
   
-  // Blocked by wall
+  ( Blocked by wall )
   force_type pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor | fixed:floor] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor | fixed:floor] gosub calculate_moving_direction
-  // Blocked by another pushable, when that another pushable has a countered force of that direction
-    // [Blocked by same pushable_type in opposing space]
+  ( Blocked by another pushable ) // When that another pushable has a countered force of that direction.
+    ( - Blocked by same pushable_type in opposing space )
   force_type pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor | _force:force_type_2:>:pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:pushable_type:floor:countered] gosub calculate_moving_direction
-    // [Blocked by opposite pushable_type in opposing space, unless current pushable has pierce or through_hole:...:next_space (because these two only apply to opposite pushable_type)] ( [TODO] do i really need through_hole???)
+    ( - Blocked by opposite pushable_type in opposing space ) // Unless current pushable has pierce or through_hole:...:next_space, because these two only apply to opposite pushable_type
+    // [TODO] do i really need through_hole???
   pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor no _pierce:pushable_type:floor:> no _through_hole:pushable_type:floor:>:next_space | _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
-    // [Blocked by a inserted pushable in the same space, unless current pushable has pierce or through_hole:...:this_space]
+    ( - Blocked by a inserted pushable in the same space ) // Unless current pushable has pierce or through_hole:...:this_space
   pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:this_space _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
 endloop
 
 
-( Remove temp stuff )
-//Remove input
-late [_input:directions] -> []
-// Remove forces
-late [_force:force_type:directions:pushable_type:floor:is_countered] -> []
-late [_temp_force_direction:force_type:directions:pushable_type:floor] -> []
-// Remove insert_force_source
-late [_insert_force_source:pushable_type:floor] -> []
-// Remove pierce & through_hole
-late [_pierce:pushable_type:floor:directions] -> []
-late [_through_hole:pushable_type:floor:directions:which_space] -> []
 
-(
-(Fall)
-(There could be multiple falls.
-If the first fall is valid, then fires another process turn. But later valid falls don't fire that.
-This difference means that I have to take the logic of the first fall out of the fall loop.)
-late pushable_type is_tip_or_packed directions high_floor [pushable:pushable_type:is_tip_or_packed:directions:high_floor _fall:high_floor] -> [pushable:pushable_type:is_tip_or_packed:directions:lower_floor _fall:high_floor]
-late [_fall:floor] -> []
-(Calculate supported:floor)
-  // Supported by fixed below
-  late low_floor [fixed:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor] -> [fixed:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor _supported:higher_floor]
-  // Supported by supported below (There is no "supported by insert" because they share the same supported:floor)
-  + late low_floor [_supported:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor] -> [_supported:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor _supported:higher_floor]
-  // Spread supported
-  + late pushable_type floor [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor] -> [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor _supported:floor]
-(Calculate fall:floor)
-late floor [pushable:pushable_type:is_tip_or_packed:directions:floor no _supported:floor] -> [pushable:pushable_type:is_tip_or_packed:directions:floor _fall:floor] again
-late [_supported:floor] -> []
-)
-
-(Don't use startloop endloop for late rules! It somehow makes the main loop unable to loop.)
-(Fall related stuff)
-startloop
-  (Calculate supported:floor)
-    // Supported by fixed below
-    late low_floor [fixed:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor] -> [fixed:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor _supported:higher_floor]
-    // Supported by supported below (There is no "supported by insert" because they share the same supported:floor)
-    + late low_floor [_supported:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor] -> [_supported:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor _supported:higher_floor]
-    // Spread supported
-    + late pushable_type floor [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor] -> [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor _supported:floor]
-  (Calculate fall:floor, if it's first process round then do "again")
-  late floor [pushable:pushable_type:is_tip_or_packed:directions:floor no _supported:floor] [_process_round:first] -> [pushable:pushable_type:is_tip_or_packed:directions:floor _fall:floor] [_process_round:first] again
-  late floor [pushable:pushable_type:is_tip_or_packed:directions:floor no _supported:floor] [_process_round:second] -> [pushable:pushable_type:is_tip_or_packed:directions:floor _fall:floor] [_process_round:second]
-  (Fall)
-  // Fall into space below
-  late pushable_type is_tip_or_packed directions high_floor [pushable:pushable_type:is_tip_or_packed:directions:high_floor _fall:high_floor] [_process_round:second] -> [pushable:pushable_type:is_tip_or_packed:directions:lower_floor _fall:high_floor] [_process_round:second]
-  // Fall into void below
-  late [pushable:pushable_type:is_tip_or_packed:directions:floor_0 _fall:floor_0] [_process_round:second] -> [_fall:floor_0] [_process_round:second] sfx0
-  (Fall over)
-  late [_fall:floor] [_process_round:second] -> [] [_process_round:second]
-endloop
-// _supported:floor needs to be cleared if it manages to get to second process round. Does not need to be cleared otherwise but I cleared it in both case.
-late [_supported:floor] -> []
-
-
-
-
-(Add temp sprites)
-late floor [pushable:stick:tip_or_packed:up:floor] -> [pushable:stick:tip_or_packed:up:floor _stick_bottom:floor]
-late floor [pushable:stick:not_tip_or_packed:down:floor] -> [pushable:stick:not_tip_or_packed:down:floor _stick_bottom:floor]
 
 
 
 subroutine calculate_moving_direction
-  // First, save and clear old moving direction
+  ( Save and clear old moving direction )
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor] -> [stationary pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor _old_moving_direction:pushable_type:floor:>]
-  // Calculate moving direction for each type of force (temp_force_direction:force_type:directions)
+  ( Calculate moving direction for each type of force ) // Using temp_force_direction:force_type:directions.
   // [TODO] add more additional rules
   force_type directions pushable_type floor [_force:force_type:directions:pushable_type:floor:uncountered _calculate_moving_direction:pushable_type:floor no _force:force_type:opposite_direction:pushable_type:floor:uncountered no _force:force_type:clockwise_direction:pushable_type:floor:uncountered no _force:force_type:counter_clockwise_direction:pushable_type:floor:uncountered] -> [_temp_force_direction:force_type:directions:pushable_type:floor _force:force_type:directions:pushable_type:floor:uncountered _calculate_moving_direction:pushable_type:floor]
-  // Calculate final moving direction (using insert push)
+  ( Calculate final moving direction, using insert push )
   pushable_type floor [pushable:pushable_type:is_tip_or_packed:directions:floor _temp_force_direction:insert:>:pushable_type:floor _calculate_moving_direction:pushable_type:floor] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor _temp_force_direction:insert:>:pushable_type:floor _calculate_moving_direction:pushable_type:floor _spread:pushable_type:floor]
-  // Calculate final moving direction (using slip push)
+  ( Calculate final moving direction, using slip push )
   pushable_type floor [pushable:pushable_type:is_tip_or_packed:directions:floor _temp_force_direction:slip:>:pushable_type:floor _calculate_moving_direction:pushable_type:floor no _temp_force_direction:insert:directions:pushable_type:floor] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor _temp_force_direction:slip:>:pushable_type:floor _calculate_moving_direction:pushable_type:floor _spread:pushable_type:floor]
-  // Calculate final moving direction (using simple push)
+  ( Calculate final moving direction, using simple push)
   pushable_type floor [pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor _temp_force_direction:simple:>:pushable_type:floor no _temp_force_direction:insert:directions:pushable_type:floor no _temp_force_direction:slip:directions:pushable_type:floor] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor _temp_force_direction:simple:>:pushable_type:floor _spread:pushable_type:floor]
   
-  // Clear old_moving_direction, if new direction is the same as it
+  ( Clear old_moving_direction ) // If new direction is the same as it.
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor _old_moving_direction:pushable_type:floor:>] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor]
-  // Clear "temp_force_direction:force_type" & "calculate_moving_direction", add "spread"
+  ( Clear "temp_force_direction:force_type" & "calculate_moving_direction", add "spread" )
   [_temp_force_direction:force_type:directions:pushable_type:floor] -> []
   pushable_type floor [_calculate_moving_direction:pushable_type:floor] -> [_spread:pushable_type:floor] gosub spread
 
@@ -654,34 +652,35 @@ subroutine calculate_moving_direction
 ( Spread moving direction & force within rigid )
 subroutine spread
   startloop
-    // Spread moving
+    ( Spread moving )
     pushable_type floor [orthogonal pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor no _spread:pushable_type:floor] -> [orthogonal pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | orthogonal pushable:pushable_type:is_tip_or_packed:>:floor _spread_next:pushable_type:floor]
-    // Spread not moving
+    ( Spread not moving)
     pushable_type floor [stationary pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor no _spread:pushable_type:floor] -> [stationary pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | stationary pushable:pushable_type:is_tip_or_packed:>:floor _spread_next:pushable_type:floor]
-    // Spread force [BUG?] switching the last two objects breaks the rule (when there is a tag as a rule prefix)
+    ( Spread force )
+    // [BUG?] switching the last two objects breaks the rule, when there is a tag as a rule prefix
     force_type directions pushable_type is_countered floor  [_force:force_type:directions:pushable_type:floor:is_countered pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor no _spread:pushable_type:floor] -> [_force:force_type:directions:pushable_type:floor:is_countered pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor _force:force_type:directions:pushable_type:floor:is_countered _spread_next:pushable_type:floor]
-    // Spread no force
+    ( Spread no force )
     force_type directions pushable_type is_countered floor [pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor no _force:force_type:directions:pushable_type:floor:is_countered | pushable:pushable_type:is_tip_or_packed:>:floor no _spread:pushable_type:floor] -> [pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor no _force:force_type:directions:pushable_type:floor:is_countered _spread_next:pushable_type:floor]
-    // Spread old_moving_direction
+    ( Spread old_moving_direction )
     directions pushable_type floor [_old_moving_direction:pushable_type:floor:directions pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor no _spread:pushable_type:floor] -> [_old_moving_direction:pushable_type:floor:directions pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor _old_moving_direction:pushable_type:floor:directions _spread_next:pushable_type:floor]
     
     pushable_type floor [_spread_next:pushable_type:floor] -> [_spread:pushable_type:floor]
   endloop
   [_spread:pushable_type:floor] -> []
   
-  // Remove force from pushables in the old moving direction
+  ( Remove force from pushables in the old moving direction )
   [_old_moving_direction:pushable_type:floor:directions] -> [_old_moving_direction:pushable_type:floor:directions] gosub remove_force_from_old_moving_direction
   
 
-( How to deal with blocked objects:
-In reality, forces are a result of two objects constantly squeezing into each other. When an object is blocked, due to the order of their positions (there is an position order of the squeezed side even if they are all inserted into each other), the object in source direction is blocked, and the object in destination direction is no longer squeezed.
-So the most realistic way to implement the rule is making a tiny squeeze from the player each loop and then spread the squeeze, while the object blocked last loop are still blocked and the squeezes last loop won't be carried to next loop.
-But does it work? Refer to the 3rd case in edge_cases.png (not public).
-This game uses another "self-correcting" way to implement the rule. )
+// How to deal with blocked objects:
+// In reality, forces are a result of two objects constantly squeezing into each other. When an object is blocked, due to the order of their positions (there is an position order of the squeezed side even if they are all inserted into each other), the object in source direction is blocked, and the object in destination direction is no longer squeezed.
+// So the most realistic way to implement the rule is making a tiny squeeze from the player each loop and then spread the squeeze, while the object blocked last loop are still blocked and the squeezes last loop won't be carried to next loop.
+// But does it work? Refer to the 3rd case in edge_cases.png (not public).
+// This game uses another "self-correcting" way to implement the rule.
 subroutine remove_force_from_old_moving_direction
-  // Remove outgoing "insert" force
+  ( Remove outgoing "insert" force )
   pushable_type floor [_old_moving_direction:pushable_type:floor:> pushable:opposite_pushable_type:is_tip_or_packed:directions:floor _force:insert:>:opposite_pushable_type:floor:is_countered _insert_force_source:pushable_type:floor] -> [_old_moving_direction:pushable_type:floor:> stationary pushable:opposite_pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:opposite_pushable_type:floor] gosub calculate_moving_direction
-  // Remove all simple/slip force from facing tile in old moving direction
+  ( Remove all simple/slip force from facing tile in old moving direction )
   pushable_type_2 floor [_old_moving_direction:pushable_type:floor:> | pushable:pushable_type_2:is_tip_or_packed:directions:floor _force:force_type_simple_or_slip:directions:pushable_type_2:floor:is_countered no _old_moving_direction:pushable_type_2:floor:>] -> [_old_moving_direction:pushable_type:floor:> | stationary pushable:pushable_type_2:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type_2:floor] gosub calculate_moving_direction
   [_old_moving_direction:pushable_type:floor:directions] -> []
 
