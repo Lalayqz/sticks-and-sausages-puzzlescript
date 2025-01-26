@@ -15,6 +15,7 @@ TAGS
 pushable_type = stick sausage
 is_tip_or_packed = tip_or_packed not_tip_or_packed
 
+fixed_type = ground grill
 floor = floor_0 floor_1 floor_2
 low_floor = floor_0 floor_1
 high_floor = floor_1 floor_2
@@ -27,9 +28,11 @@ is_countered = uncountered countered
 which_space = this_space next_space
 
 pushable_type_2 = pushable_type
+is_tip_or_packed_2 = is_tip_or_packed
+directions_2 = directions
 force_type_2 = force_type
 
-process_round_count = first second
+again_round_type = grill fall pack
 
 ========
 MAPPINGS
@@ -65,11 +68,8 @@ sausage_simple sausage_slip  sausage_insert )
 background 
 black     
 
-fixed:floor
-transparent
-
-fixed:floor_0
-#C6743D #AF6736 #63381D
+fixed:ground:floor_0
+#C6743D #AF6736 #63381D #422513 #211209
 1000000001
 0000000000
 0000000000
@@ -83,10 +83,10 @@ fixed:floor_0
 2222222222
 2222222222
 2222222222
-2222222222
-2222222222
+3333333333
+4444444444
 
-fixed:floor_1
+fixed:ground:floor_1
 #12A52D #0F8E27 #0D7A21 #63381D
 1000000001
 0000000000
@@ -105,9 +105,35 @@ fixed:floor_1
 3333333333
 translate: up:5
 
-fixed:floor_2
-brown brown #63381D
-copy: fixed:floor_1 translate: up:5
+fixed:ground:floor_2
+brown brown #63381D #63381D
+copy: fixed:ground:floor_1 translate: up:5
+
+fixed:grill:floor_0
+#252525 orange red black #63381D
+2200220011
+2200220011
+0000000000
+0000000000
+1100220022
+1100220022
+0000000000
+0000000000
+1100110022
+1100110022
+3333333333
+3333333333
+4444444444
+4444444444
+4444444444
+
+fixed:grill:floor_1
+#252525 orange red black #63381D
+copy: fixed:grill:floor_0 translate: up:5
+
+fixed:grill:floor_2
+#252525 orange red black #63381D
+copy: fixed:grill:floor_1 translate: up:5
 
 pushable:pushable_type:is_tip_or_packed:directions:floor
 transparent
@@ -397,9 +423,6 @@ orange
 copy: _force:insert:directions:sausage:floor:uncountered
 
 
-_process_round:process_round_count
-transparent
-
 _temp_force_direction:force_type:directions:pushable_type:floor
 transparent
 
@@ -428,36 +451,46 @@ transparent
 _insert_force_source:pushable_type:floor
 transparent
 
+_top_left_spot
+transparent
+
+_can_fall_again
+transparent
+
+_do_again:again_round_type
+transparent
+
 _supported:floor
 transparent
 
-_fall:floor
+_just_fell:floor
 transparent
 
-_do_again
+_not_on_goal:floor
 transparent
 
 =======
 LEGEND
 =======
 
-thing = pushable:pushable_type:is_tip_or_packed:directions:floor or fixed:floor
+thing = pushable:pushable_type:is_tip_or_packed:directions:floor or fixed:fixed_type:floor
 
 O = background
-_ = fixed:floor_0
-. = fixed:floor_0 and fixed:floor_1
-# = fixed:floor_0 and fixed:floor_1 and fixed:floor_2
+_ = fixed:ground:floor_0
+. = fixed:ground:floor_0 and fixed:ground:floor_1
+0 = fixed:ground:floor_0 and fixed:ground:floor_1 and fixed:ground:floor_2
+# = fixed:ground:floor_0 and fixed:grill:floor_1
 
-X = fixed:floor_0 and fixed:floor_1 and goal:floor_1
+X = fixed:ground:floor_0 and fixed:ground:floor_1 and goal:floor_1
 
-∩ = fixed:floor_0 and fixed:floor_1 and pushable:sausage:not_tip_or_packed:up:floor_2
-U = fixed:floor_0 and fixed:floor_1 and pushable:sausage:not_tip_or_packed:down:floor_2
-{ = fixed:floor_0 and fixed:floor_1 and pushable:sausage:not_tip_or_packed:left:floor_2
-} = fixed:floor_0 and fixed:floor_1 and pushable:sausage:not_tip_or_packed:right:floor_2
-t = fixed:floor_0 and fixed:floor_1 and pushable:stick:tip_or_packed:up:floor_2
-b = fixed:floor_0 and fixed:floor_1 and pushable:stick:not_tip_or_packed:down:floor_2
+∩ = fixed:ground:floor_0 and fixed:ground:floor_1 and pushable:sausage:not_tip_or_packed:up:floor_2
+U = fixed:ground:floor_0 and fixed:ground:floor_1 and pushable:sausage:not_tip_or_packed:down:floor_2
+{ = fixed:ground:floor_0 and fixed:ground:floor_1 and pushable:sausage:not_tip_or_packed:left:floor_2
+} = fixed:ground:floor_0 and fixed:ground:floor_1 and pushable:sausage:not_tip_or_packed:right:floor_2
+t = fixed:ground:floor_0 and fixed:ground:floor_1 and pushable:stick:tip_or_packed:up:floor_2
+b = fixed:ground:floor_0 and fixed:ground:floor_1 and pushable:stick:not_tip_or_packed:down:floor_2
 
-% = _process_round:first
+% = _top_left_spot
 
 player = pushable:stick:is_tip_or_packed:directions:floor
 
@@ -466,7 +499,7 @@ COLLISIONLAYERS
 ================
 
 background
-floor -> fixed:floor
+floor -> fixed:fixed_type:floor
 goal:floor
 directions floor -> goal_border:directions:floor
 
@@ -486,15 +519,18 @@ force_type pushable_type floor -> _temp_force_direction:force_type:directions:pu
 pushable_type floor -> _spread:pushable_type:floor, _spread_next:pushable_type:floor
 pushable_type floor -> _calculate_moving_direction:pushable_type:floor
 
-_process_round:process_round_count
 _insert_force_source:pushable_type:floor
 pushable_type floor -> _old_moving_direction:pushable_type:floor:directions
 _pierce:pushable_type:floor:directions
 pushable_type directions which_space -> _through_hole:pushable_type:floor:directions:which_space
 _input:directions
+
+_top_left_spot
+_can_fall_again
+again_round_type -> _do_again:again_round_type
 floor -> _supported:floor
-floor -> _fall:floor
-_do_again
+floor -> _just_fell:floor
+floor -> _not_on_goal:floor
 
 ======
 SOUNDS
@@ -502,7 +538,7 @@ SOUNDS
 
 sfx0 81019907 ( Fall onto ground )
 sfx1 81700105 ( Fall into void )
-
+sfx2 80064702 ( Grill )
 
 =====
 RULES     
@@ -522,42 +558,64 @@ late [_pierce:pushable_type:floor:directions] -> []
 late [_through_hole:pushable_type:floor:directions:which_space] -> []
 
 
+( Do grill & check if can grill )
+  ( - Do grill )
+  late low_floor [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] [_do_again:grill] -> [fixed:grill:low_floor] [_do_again:grill] sfx2
+  late [_do_again:grill] -> []
+  ( - Check if can grill )
+  late low_floor [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] -> [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor _do_again:grill] again
+
+
 ( Fall related stuff )
 // There could be multiple falls.
 // If the first fall is valid, then fires another process turn. But later valid falls don't fire that.
 // This difference means that I have to take the logic of the first fall out of the fall loop.
 startloop
-  (Calculate supported:floor)
+  ( Calculate supported:floor )
     ( - Supported by fixed below )
-    late low_floor [fixed:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor] -> [fixed:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor _supported:higher_floor]
+    late low_floor [fixed:fixed_type:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor] -> [fixed:fixed_type:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor _supported:higher_floor]
     ( - Supported by supported below )
-    // There is no "supported by insert" because they share the same supported:floor
+    // There is no "supported by insert" because they share the same supported:floor.
     + late low_floor [_supported:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor] -> [_supported:low_floor pushable:pushable_type:is_tip_or_packed:directions:higher_floor _supported:higher_floor]
     ( - Spread supported )
     + late pushable_type floor [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor] -> [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor _supported:floor]
-  ( Calculate fall:floor, if it's first process round then do "again" )
-  late floor [pushable:pushable_type:is_tip_or_packed:directions:floor no _supported:floor] [_process_round:first] -> [pushable:pushable_type:is_tip_or_packed:directions:floor _fall:floor] [_process_round:first _do_again]
-  late floor [pushable:pushable_type:is_tip_or_packed:directions:floor no _supported:floor] [_process_round:second] -> [pushable:pushable_type:is_tip_or_packed:directions:floor _fall:floor] [_process_round:second]
-  ( Fall )
-  ( - Fall into space below )
-  late pushable_type is_tip_or_packed directions high_floor [pushable:pushable_type:is_tip_or_packed:directions:high_floor _fall:high_floor] [_process_round:second] -> [pushable:pushable_type:is_tip_or_packed:directions:lower_floor _fall:high_floor] [_process_round:second]
-  ( - Fall into void below )
-  late [pushable:pushable_type:is_tip_or_packed:directions:floor_0 _fall:floor_0] [_process_round:second] -> [_fall:floor_0] [_process_round:second] sfx1
-  ( Fall over )
-  late [_fall:floor] [_process_round:second] -> [] [_process_round:second]
+  ( Do fall )
+    ( - Fall into void below )
+    late [pushable:pushable_type:is_tip_or_packed:directions:floor_0] [_do_again:fall] -> [] [_do_again:fall] sfx1
+    ( - Fall into space below )
+    // When 2 objects are on top of each other, make the bottom one fall first. So no pushable:...:lower_floor.
+    // After something falls, add a _just_fell to that target space so it won't fall again.
+    late pushable_type is_tip_or_packed directions high_floor [pushable:pushable_type:is_tip_or_packed:directions:high_floor no _supported:floor no _just_fell:floor no pushable:pushable_type_2:is_tip_or_packed_2:directions_2:lower_floor] [_do_again:fall] -> [pushable:pushable_type:is_tip_or_packed:directions:lower_floor _just_fell:lower_floor] [_do_again:fall]
+    late [_just_fell:floor] -> []
+  ( Check if can fall )
+    ( - Fall into space below )
+    late pushable_type is_tip_or_packed directions high_floor [pushable:pushable_type:is_tip_or_packed:directions:high_floor no _supported:floor] -> [pushable:pushable_type:is_tip_or_packed:directions:high_floor _can_fall_again]
+    ( - Fall into void below )
+    late [pushable:pushable_type:is_tip_or_packed:directions:floor_0] -> [pushable:pushable_type:is_tip_or_packed:directions:floor_0 _can_fall_again]
 endloop
-// _supported:floor needs to be cleared if it manages to get to second process round. Does not need to be cleared otherwise but I cleared it in both case.
+( Clear _supported )
 late [_supported:floor] -> []
-( Return to first round )
-late [_process_round:second] -> [_process_round:first]
-( Prepare for sencond round )
-// I can't turn _process_round:first into _process_round:second in the loop so I introduce a temp variable "do_again" to do that here.
-late [_do_again] [_process_round:first] -> [] [_process_round:second] again
+( _can_again -> _do_again )
+late [_can_fall_again] -> [_do_again:fall] again
+
+
+( Do pack & check if can pack )
+  ( - Calculate _not_on_goal )
+  late floor [pushable:sausage:not_tip_or_packed:directions:floor no goal:floor_x] -> [pushable:sausage:not_tip_or_packed:directions:floor _not_on_goal:floor]
+  late floor [pushable:sausage:not_tip_or_packed:<:floor _not_on_goal:floor | pushable:sausage:not_tip_or_packed:>:floor] -> [pushable:sausage:not_tip_or_packed:<:floor _not_on_goal:floor | pushable:sausage:not_tip_or_packed:>:floor _not_on_goal:floor]
+  ( - Do pack )
+  late directions floor [pushable:sausage:not_tip_or_packed:directions:floor no _not_on_goal:floor] [_do_again:pack] -> [pushable:sausage:tip_or_packed:directions:floor] [_do_again:pack]
+  late [_do_again:pack] -> []
+  ( - Check if can pack )  // Add _can_again:pack to top left spot
+  late floor [pushable:sausage:not_tip_or_packed:directions:floor no _not_on_goal:floor] [_top_left_spot] -> [pushable:sausage:not_tip_or_packed:directions:floor] [_top_left_spot _do_again:pack] again
+  ( - Clear _not_on_goal )
+  late [_not_on_goal:floor] -> []
 
 
 ( Add temp sprites )
 late floor [pushable:stick:tip_or_packed:up:floor] -> [pushable:stick:tip_or_packed:up:floor _stick_bottom:floor]
 late floor [pushable:stick:not_tip_or_packed:down:floor] -> [pushable:stick:not_tip_or_packed:down:floor _stick_bottom:floor]
+
 
 
 
@@ -612,7 +670,7 @@ startloop
   ( II Blocked )
   
   ( Blocked by wall )
-  force_type pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor | fixed:floor] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor | fixed:floor] gosub calculate_moving_direction
+  force_type pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor | fixed:fixed_type:floor] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor | fixed:fixed_type:floor] gosub calculate_moving_direction
   ( Blocked by another pushable ) // When that another pushable has a countered force of that direction.
     ( - Blocked by same pushable_type in opposing space )
   force_type pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor | _force:force_type_2:>:pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:pushable_type:floor:countered] gosub calculate_moving_direction
@@ -654,7 +712,7 @@ subroutine spread
   startloop
     ( Spread moving )
     pushable_type floor [orthogonal pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor no _spread:pushable_type:floor] -> [orthogonal pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | orthogonal pushable:pushable_type:is_tip_or_packed:>:floor _spread_next:pushable_type:floor]
-    ( Spread not moving)
+    ( Spread not moving )
     pushable_type floor [stationary pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor no _spread:pushable_type:floor] -> [stationary pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | stationary pushable:pushable_type:is_tip_or_packed:>:floor _spread_next:pushable_type:floor]
     ( Spread force )
     // [BUG?] switching the last two objects breaks the rule, when there is a tag as a rule prefix
@@ -691,17 +749,17 @@ LEVELS
 section push
 level push
 
-%#############
-##############
-##############
-##......∩...##
-##......U...##
-##...#{}{}..##
-###.....{}{}##
-##.#OO..t...##
-##..OO..b...##
-##.XX.___...##
-##.XX.___{}.##
-##..{}___.{}##
-##############
-##############
+%0000000000000
+00000000000000
+00000000000000
+00##....∩...00
+00##....U...00
+00OO.0{}{}..00
+000.....{}{}00
+00.0OO..t...00
+00..OO..b...00
+00.XX.___...00
+00.XX.___{}.00
+00..{}___.{}00
+00000000000000
+00000000000000
