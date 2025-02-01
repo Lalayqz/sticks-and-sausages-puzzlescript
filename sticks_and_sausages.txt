@@ -1,12 +1,16 @@
+title Sticks and Sausages
 author Lala_yqz
 
 sprite_size 10x10
+background_color #211209
+text_color #e3c4d7
+level_select
+level_select_solve_symbol ✓
 run_rules_on_level_start
 
 verbose_logging
 debug
 //
-
 
 ====
 TAGS
@@ -225,7 +229,6 @@ _stick_bottom:floor_2
 orange brown
 copy: _stick_bottom:floor_1 translate: up:5
 
-
 pushable:sausage:not_tip_or_packed:up:floor_0
 #e06f8b #cc6680 #994d60
 ..........
@@ -266,18 +269,18 @@ pushable:sausage:not_tip_or_packed:left:floor_0
 #e06f8b #cc6680 #994d60
 ..........
 ..........
+...1000000
 ..10000000
-.100000000
-.100000000
-1100000000
-1100000000
-1100000000
-1100000000
-2110000000
-2111111111
-2211111111
-.222222222
+..10000000
+.110000000
+.110000000
+.110000000
+.110000000
+.211000000
+.211111111
+.221111111
 ..22222222
+...2222222
 ..........
 
 
@@ -285,30 +288,120 @@ pushable:sausage:not_tip_or_packed:right:floor_0
 #e06f8b #cc6680 #994d60 (#e3c4d7)
 ..........
 ..........
+0000000...
+00000000..
 00000000..
 000000000.
 000000000.
-0000000000
-0000000000
-0000000000
-0000000000
-0000000001
-1111111111
-1111111112
-222222222.
+000000000.
+000000000.
+000000001.
+111111111.
+111111112.
 22222222..
+2222222...
 ..........
 
-pushable:sausage:is_tip_or_packed:directions:floor_1
+pushable:sausage:not_tip_or_packed:directions:floor_1
 #e06f8b #cc6680 #994d60
-copy: pushable:sausage:is_tip_or_packed:directions:floor_0 translate: up:5
+copy: pushable:sausage:not_tip_or_packed:directions:floor_0 translate: up:5
 
-pushable:sausage:is_tip_or_packed:directions:floor_2
+pushable:sausage:not_tip_or_packed:directions:floor_2
 #e06f8b #cc6680 #994d60
-copy: pushable:sausage:is_tip_or_packed:directions:floor_1 translate: up:5
+copy: pushable:sausage:not_tip_or_packed:directions:floor_1 translate: up:5
 
-goal:floor
-transparent
+pushable:sausage:tip_or_packed:up:floor_0
+#f10914 #db141e #ab0f17 #787878
+..........
+....33....
+...1000...
+.11000000.
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+2222222222
+2222222222
+2222222222
+
+pushable:sausage:tip_or_packed:down:floor_0
+#f10914 #db141e #ab0f17 #787878
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+1110000011
+2111111112
+2211331122
+.22233222.
+...2222...
+..........
+..........
+
+pushable:sausage:tip_or_packed:left:floor_0
+#f10914 #db141e #ab0f17 #787878
+..........
+..........
+...1000000
+..10000000
+..10000000
+.110000000
+.110000000
+3110000000
+3110000000
+3211000000
+.211111111
+.221111111
+..22222222
+...2222222
+..........
+
+
+pushable:sausage:tip_or_packed:right:floor_0
+#f10914 #db141e #ab0f17 #787878
+..........
+..........
+0000000...
+00000000..
+00000000..
+000000000.
+000000000.
+0000000003
+0000000003
+0000000013
+111111111.
+111111112.
+22222222..
+2222222...
+..........
+
+pushable:sausage:tip_or_packed:directions:floor_1
+#f10914 #db141e #ab0f17 #787878
+copy: pushable:sausage:tip_or_packed:directions:floor_0 translate: up:5
+
+pushable:sausage:tip_or_packed:directions:floor_2
+#f10914 #db141e #ab0f17 #787878
+copy: pushable:sausage:tip_or_packed:directions:floor_1 translate: up:5
+
+goal:floor_0
+#F7E26B80
+translate: up:5
+
+goal:floor_1
+#F7E26B80
+copy: goal:floor_0 translate: up:5
+
+goal:floor_2
+#F7E26B80
+copy: goal:floor_1 translate: up:5
 
 goal_border:directions:floor_0
 yellow
@@ -331,6 +424,42 @@ copy: goal_border:directions:floor_0 translate: up:5
 goal_border:directions:floor_2
 yellow
 copy: goal_border:directions:floor_1 translate: up:5
+
+scoreboard_empty
+#211209
+..........
+...000....
+..00000...
+.0000000..
+.0000000..
+.0000000..
+.0000000..
+.0000000..
+.0000000..
+.0000000..
+..00000...
+...000....
+..........
+..........
+..........
+
+scoreboard_filled
+#f10914 #787878
+..........
+...111....
+..00000...
+.0000000..
+.0000000..
+.0000000..
+.0000000..
+.0000000..
+.0000000..
+.0000000..
+..00000...
+...111....
+..........
+..........
+..........
 
 
 _force:force_type:directions:pushable_type:floor:is_countered
@@ -485,8 +614,49 @@ transparent
 _just_fell:floor
 transparent
 
-_not_on_goal:floor
+_not_eligible_for_pack:floor
 transparent
+
+_update_scoreboard
+transparent
+
+_already_calculated_for_scoreboard:floor
+transparent
+
+_scoreboard_calculation_spread_ongoing
+transparent
+
+_title_drawbridge
+transparent #63381D
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+111000000000111100000000111100000000000000000000100000000000001000000010000000000000
+001000000000000010000000100010000000000000000000100000000000000000000010000000000000
+001000000000001100000000100010011110011110101010111100011110011000011110011110011100
+001000000000000010000000100010100000100010101010100010100000001000100010100010100010
+001000011100000010000000100010100000100010101010100010100000001000100010100010111110
+001000000000000010000000100010100000100010101010100010100000001000100010100010100000
+111110000000111100000000111100100000011110010100011100100000011100011110011110011100
+000000000000000000000000000000000000000000000000000000000000000000000000000010000000
+000000000000000000000000000000000000000000000000000000000000000000000000011100000000
+translate: right:3 translate: down:2
+
+_title_claw_hammer
+transparent #211209
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+111000000000100000000000011110011000000000000000000000100010000000000000000000000000000000
+001000000000100000000000100000001000000000000000000000100010000000000000000000000000000000
+001000000000100000000000100000001000011110101010000000111110011110010100010100011100011110
+001000000000100100000000100000001000100010101010000000100010100010101010101010100010100000
+001000011100111110000000100000001000100010101010000000100010100010101010101010111110100000
+001000000000000100000000100000001000100010101010000000100010100010101010101010100000100000
+111110000000000100000000011110011100011110010100000000100010011110101010101010011100100000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
 
 =======
 LEGEND
@@ -497,21 +667,27 @@ thing = pushable:pushable_type:is_tip_or_packed:directions:floor or fixed:fixed_
 O = background
 _ = fixed:ground:floor_0
 . = fixed:ground:floor_0 and fixed:ground:floor_1
-0 = fixed:ground:floor_0 and fixed:ground:floor_1 and fixed:ground:floor_2
-# = fixed:ground:floor_0 and fixed:grill:floor_1
+# = fixed:ground:floor_0 and fixed:ground:floor_1 and fixed:ground:floor_2
+$ = # and scoreboard_empty
++ = fixed:ground:floor_0 and fixed:grill:floor_1
 
 X = fixed:ground:floor_0 and fixed:ground:floor_1 and goal:floor_1
 
-∩ = fixed:ground:floor_0 and fixed:ground:floor_1 and pushable:sausage:not_tip_or_packed:up:floor_2
-U = fixed:ground:floor_0 and fixed:ground:floor_1 and pushable:sausage:not_tip_or_packed:down:floor_2
-{ = fixed:ground:floor_0 and fixed:ground:floor_1 and pushable:sausage:not_tip_or_packed:left:floor_2
-} = fixed:ground:floor_0 and fixed:ground:floor_1 and pushable:sausage:not_tip_or_packed:right:floor_2
-t = fixed:ground:floor_0 and fixed:ground:floor_1 and pushable:stick:tip_or_packed:up:floor_2
-b = fixed:ground:floor_0 and fixed:ground:floor_1 and pushable:stick:not_tip_or_packed:down:floor_2
+n = . and pushable:sausage:not_tip_or_packed:up:floor_2
+u = . and pushable:sausage:not_tip_or_packed:down:floor_2
+{ = . and pushable:sausage:not_tip_or_packed:left:floor_2
+} = . and pushable:sausage:not_tip_or_packed:right:floor_2
+t = . and pushable:stick:tip_or_packed:up:floor_2
+b = . and pushable:stick:not_tip_or_packed:down:floor_2
 
 % = _top_left_spot
 
 player = pushable:stick:is_tip_or_packed:directions:floor
+
+< = x and pushable:sausage:not_tip_or_packed:left:floor_2
+
+③ = _top_left_spot and _title_drawbridge
+④ = # and _title_claw_hammer
 
 ================
 COLLISIONLAYERS
@@ -549,17 +725,31 @@ _can_fall_again
 again_round_type -> _do_again:again_round_type
 floor -> _supported:floor
 floor -> _just_fell:floor
-floor -> _not_on_goal:floor
+floor -> _not_eligible_for_pack:floor
 
 _floor_1_grass_cover
+
+scoreboard_empty
+scoreboard_filled
+_update_scoreboard
+floor -> _already_calculated_for_scoreboard:floor
+_scoreboard_calculation_spread_ongoing
+
+--
+
+_title_drawbridge
+_title_claw_hammer
+
 
 ======
 SOUNDS
 ======
 
-sfx0 81019907 ( Fall onto ground )
-sfx1 81700105 ( Fall into void )
-sfx2 80064702 ( Grill )
+sfx0 3060701 ( Push )
+sfx1 53000505 ( Pack )
+sfx2 81019907 ( Fall onto ground )
+sfx3 81700105 ( Fall into void )
+sfx4 80064702 ( Grill )
 
 =====
 RULES     
@@ -581,13 +771,13 @@ late [_through_hole:pushable_type:floor:directions:which_space] -> []
 
 ( Do grill & check if can grill )
   ( - Do grill )
-  late low_floor [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] [_do_again:grill] -> [fixed:grill:low_floor] [_do_again:grill] sfx2
+  late low_floor [_do_again:grill] [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] -> [_do_again:grill] [fixed:grill:low_floor] sfx4
   late [_do_again:grill] -> []
   ( - Check if can grill )
-  late low_floor [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] -> [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor _do_again:grill] again
+  late low_floor [_top_left_spot no _do_again:grill] [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] -> [_top_left_spot _do_again:grill] [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor] again
 
 
-( Fall related stuff )
+( Do fall & check if can fall )
 // There could be multiple falls.
 // If the first fall is valid, then fires another process turn. But later valid falls don't fire that.
 // This difference means that I have to take the logic of the first fall out of the fall loop.
@@ -602,41 +792,68 @@ startloop
     + late pushable_type floor [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor] -> [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor _supported:floor]
   ( Do fall )
     ( - Fall into void below )
-    late [pushable:pushable_type:is_tip_or_packed:directions:floor_0] [_do_again:fall] -> [] [_do_again:fall] sfx1
+    late [_do_again:fall] [pushable:pushable_type:is_tip_or_packed:directions:floor_0] -> [_do_again:fall] [] sfx3
     ( - Fall into space below )
     // When 2 objects are on top of each other, make the bottom one fall first. So no pushable:...:lower_floor.
     // After something falls, add a _just_fell to that target space so it won't fall again.
-    late pushable_type is_tip_or_packed directions high_floor [pushable:pushable_type:is_tip_or_packed:directions:high_floor no _supported:high_floor no _just_fell:high_floor no pushable:pushable_type:is_tip_or_packed_2:directions_2:lower_floor] [_do_again:fall] -> [pushable:pushable_type:is_tip_or_packed:directions:lower_floor _just_fell:lower_floor] [_do_again:fall]
+    late pushable_type is_tip_or_packed directions high_floor [_do_again:fall] [pushable:pushable_type:is_tip_or_packed:directions:high_floor no _supported:high_floor no _just_fell:high_floor no pushable:pushable_type:is_tip_or_packed_2:directions_2:lower_floor] ->[_do_again:fall] [pushable:pushable_type:is_tip_or_packed:directions:lower_floor _just_fell:lower_floor]
     ( PLay sound if it falls onto ground )
-    late high_floor [_just_fell:high_floor fixed:fixed_type:lower_floor] -> [_just_fell:high_floor fixed:fixed_type:lower_floor] sfx0
+    late high_floor [_just_fell:high_floor fixed:fixed_type:lower_floor] -> [_just_fell:high_floor fixed:fixed_type:lower_floor] sfx2
     ( PLay sound if it falls onto something supported )
-    late high_floor [_just_fell:high_floor _supported:lower_floor] -> [_just_fell:high_floor _supported:lower_floor] sfx0
+    late high_floor [_just_fell:high_floor _supported:lower_floor] -> [_just_fell:high_floor _supported:lower_floor] sfx2
     late [_just_fell:floor] -> []
   ( Check if can fall )
     ( - Fall into space below )
-    late pushable_type is_tip_or_packed directions high_floor [pushable:pushable_type:is_tip_or_packed:directions:high_floor no _supported:high_floor] -> [pushable:pushable_type:is_tip_or_packed:directions:high_floor _can_fall_again]
+    late pushable_type is_tip_or_packed directions high_floor [_top_left_spot no _can_fall_again] [pushable:pushable_type:is_tip_or_packed:directions:high_floor no _supported:high_floor] -> [_top_left_spot _can_fall_again] [pushable:pushable_type:is_tip_or_packed:directions:high_floor] 
     ( - Fall into void below )
-    late [pushable:pushable_type:is_tip_or_packed:directions:floor_0] -> [pushable:pushable_type:is_tip_or_packed:directions:floor_0 _can_fall_again]
+    late [_top_left_spot no _can_fall_again] [pushable:pushable_type:is_tip_or_packed:directions:floor_0] -> [_top_left_spot _can_fall_again] [pushable:pushable_type:is_tip_or_packed:directions:floor_0]
 endloop
 ( Clear _supported )
 late [_supported:floor] -> []
+( Order a scoreboard update )
+late [_do_again:fall] -> [_do_again:fall _update_scoreboard]
 ( _can_again -> _do_again )
 late [_do_again:fall] -> []
 late [_can_fall_again] -> [_do_again:fall] again
 
 
 ( Do pack & check if can pack )
-  ( - Calculate _not_on_goal )
-  late floor [pushable:sausage:not_tip_or_packed:directions:floor no goal:floor_x] -> [pushable:sausage:not_tip_or_packed:directions:floor _not_on_goal:floor]
-  late floor [pushable:sausage:not_tip_or_packed:<:floor _not_on_goal:floor | pushable:sausage:not_tip_or_packed:>:floor] -> [pushable:sausage:not_tip_or_packed:<:floor _not_on_goal:floor | pushable:sausage:not_tip_or_packed:>:floor _not_on_goal:floor]
+  ( - Calculate _not_eligible_for_pack )
+  late floor [pushable:sausage:not_tip_or_packed:directions:floor no goal:floor_x] -> [pushable:sausage:not_tip_or_packed:directions:floor _not_eligible_for_pack:floor]
+  late floor [pushable:sausage:not_tip_or_packed:directions:floor pushable:stick:is_tip_or_packed:directions:floor] -> [pushable:sausage:not_tip_or_packed:directions:floor pushable:stick:is_tip_or_packed:directions:floor _not_eligible_for_pack:floor]
+  late floor [pushable:sausage:not_tip_or_packed:<:floor _not_eligible_for_pack:floor | pushable:sausage:not_tip_or_packed:>:floor] -> [pushable:sausage:not_tip_or_packed:<:floor _not_eligible_for_pack:floor | pushable:sausage:not_tip_or_packed:>:floor _not_eligible_for_pack:floor]
   ( - Do pack )
-  late directions floor [pushable:sausage:not_tip_or_packed:directions:floor no _not_on_goal:floor] [_do_again:pack] -> [pushable:sausage:tip_or_packed:directions:floor] [_do_again:pack]
+  late directions floor [_do_again:pack] [pushable:sausage:not_tip_or_packed:directions:floor no _not_eligible_for_pack:floor] -> [_do_again:pack] [pushable:sausage:tip_or_packed:directions:floor] sfx1
+  ( - Order a scoreboard update )
+  late [_do_again:pack] -> [_do_again:pack _update_scoreboard]
   late [_do_again:pack] -> []
-  ( - Check if can pack )  // Add _can_again:pack to top left spot
-  late floor [pushable:sausage:not_tip_or_packed:directions:floor no _not_on_goal:floor] [_top_left_spot] -> [pushable:sausage:not_tip_or_packed:directions:floor] [_top_left_spot _do_again:pack] again
-  ( - Clear _not_on_goal )
-  late [_not_on_goal:floor] -> []
+  ( - Check if can pack )
+  late floor [_top_left_spot no _do_again:pack] [pushable:sausage:not_tip_or_packed:directions:floor no _not_eligible_for_pack:floor] -> [_top_left_spot _do_again:pack] [pushable:sausage:not_tip_or_packed:directions:floor] again
+  ( - Clear _not_eligible_for_pack )
+  late [_not_eligible_for_pack:floor] -> []
 
+
+( Update scoreboard )
+  ( - Clear whole scoreboard )
+  late [_update_scoreboard] [scoreboard_filled] -> [_update_scoreboard] [scoreboard_empty]
+  startloop
+    ( - Find a packed suausage that's not already calculated )
+    // I use _scoreboard_calculation_spread_ongoing to make sure only one tile is picked per loop.
+    late floor [_top_left_spot _update_scoreboard no _scoreboard_calculation_spread_ongoing] [pushable:sausage:tip_or_packed:directions:floor no _already_calculated_for_scoreboard:floor] -> [_top_left_spot _update_scoreboard _scoreboard_calculation_spread_ongoing] [pushable:sausage:tip_or_packed:directions:floor _already_calculated_for_scoreboard:floor]
+    ( - Spread _already_calculated_for_scoreboard within sausage )
+    late floor [pushable:sausage:tip_or_packed:<:floor _already_calculated_for_scoreboard:floor | pushable:sausage:tip_or_packed:>:floor] -> [pushable:sausage:tip_or_packed:<:floor _already_calculated_for_scoreboard:floor | pushable:sausage:tip_or_packed:>:floor _already_calculated_for_scoreboard:floor]
+    ( - Add one sausage to scoreboard )
+    // If scoreboard is already full, then _scoreboard_calculation_spread_ongoing persists into the next loop, then no rule is executed there.
+      ( · Leftmost sausage in scoreboard )
+      late right [_top_left_spot _scoreboard_calculation_spread_ongoing] [no scoreboard_empty no scoreboard_filled | scoreboard_empty] -> [_top_left_spot] [ | scoreboard_filled]
+      ( · Non-leftmost sausage in scoreboard )
+      late right [_top_left_spot _scoreboard_calculation_spread_ongoing] [scoreboard_filled | scoreboard_empty] -> [_top_left_spot] [scoreboard_filled | scoreboard_filled]
+  endloop
+  ( - Remove temp variables )
+  late [_already_calculated_for_scoreboard:floor] -> []
+  late [_scoreboard_calculation_spread_ongoing] -> []
+  late [_update_scoreboard] -> []
+    
 
 ( Add temp sprites )
 late floor [pushable:stick:tip_or_packed:up:floor] -> [pushable:stick:tip_or_packed:up:floor _stick_bottom:floor]
@@ -649,7 +866,7 @@ late floor [pushable:stick:not_tip_or_packed:down:floor] -> [pushable:stick:not_
 [_stick_bottom:floor] -> []
 
 ( Calculate goal borders )
-floor [goal:floor | no goal:floor_x ] -> [goal:floor goal_border:>:floor | goal_border:<:floor]
+floor [goal:floor | no goal:floor_x ] -> [goal:floor goal_border:>:floor | ]
 ( Calculate floor 1 grass covers )
 [fixed:ground:floor_1 fixed:fixed_type:floor_2] -> [fixed:ground:floor_1 fixed:fixed_type:floor_2 _floor_1_grass_cover] 
 
@@ -676,9 +893,9 @@ startloop
   // Calculate moving direction right now, not waiting for other tiles that need calculations and calculate them together. This is because when spreading, 2 tiles wont't spread into each other because they are both spread sources.
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor pushable:opposite_pushable_type:is_tip_or_packed:directions:floor no _force:insert:>:opposite_pushable_type:floor:is_countered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor pushable:opposite_pushable_type:is_tip_or_packed:directions:floor _force:insert:>:opposite_pushable_type:floor:uncountered _insert_force_source:pushable_type:floor _calculate_moving_direction:opposite_pushable_type:floor] gosub calculate_moving_direction
   // [TODO?] If the object you are pushing is moving in the same direction driven by an insert force, then it should not be pushed (because you can't touch it!). This is implemented by adding "no force:insert:>:sausage:uncountered" in the following rules, which is only a makeshift, and only works when there are no multiple objects & no strangely-shaped objects.
-  ( - Push opposing sausage )
+  ( - Push unpacked opposing sausage )
   pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:<:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:<:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
-  ( - Push side sausage )
+  ( - Push unpacked side sausage )
     ( [Rotation A] [Simple + Slip] )
     // The following 2 rules already did this job, but this rule is added to make the rule process shorter
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:^:floor no _force:simple:>:sausage:floor:is_countered no _force:slip:v:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:simple:>:sausage:floor:uncountered _force:slip:v:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
@@ -692,6 +909,9 @@ startloop
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:v:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
     ( [Rotation B] [Slip] )
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:v:floor no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+  ( - Push packed sausage )
+  floor [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:tip_or_packed:directions:floor no _force:simple:>:sausage:floor:is_countered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:tip_or_packed:directions:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+  
 
 
 
@@ -736,6 +956,8 @@ subroutine calculate_moving_direction
 
 
 ( Spread moving direction & force within rigid )
+// Why do I need _spread:pushable_type:floor?
+// Because when a sausage has a tile with a force and another without force, how do you know whether to spread the force or spread the "no force"?
 subroutine spread
   startloop
     ( Spread moving )
@@ -770,24 +992,170 @@ subroutine remove_force_from_old_moving_direction
   pushable_type_2 floor [_old_moving_direction:pushable_type:floor:> | pushable:pushable_type_2:is_tip_or_packed:directions:floor _force:force_type_simple_or_slip:directions:pushable_type_2:floor:is_countered no _old_moving_direction:pushable_type_2:floor:>] -> [_old_moving_direction:pushable_type:floor:> | stationary pushable:pushable_type_2:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type_2:floor] gosub calculate_moving_direction
   [_old_moving_direction:pushable_type:floor:directions] -> []
 
+
+=============
+WINCONDITIONS
+=============
+
+no scoreboard_empty
+
+
 =======     
 LEVELS
 =======
 
+
+(
 section push
 level push
 
-%0000000000000
-00000000000000
-00000000000000
-00##....∩...00
-00##....U...00
-00OO.0{}{}..00
-000.....{}{}00
-00.0OO..t...00
-00..OO..b...00
-00.XX.___...00
-00.XX.___{}.00
-00..{}___.{}00
-00000000000000
-00000000000000
+%#############
+##############
+##############
+##++....∩...##
+##++....U...##
+##OO.#{}{}..##
+###.....{}{}##
+##.#OO..t...##
+##..OO..b...##
+##.XX.___...##
+##.XX.___{}.##
+##..{}___.{}##
+##############
+##############
+)
+
+
+section 1-1 Caution! Slippery 
+level 1-1 Caution! Slippery
+message 1-1 Caution! Slippery 
+%###############
+################
+################
+################
+##.....#########
+##.t..........##
+##.b..........##
+##.....{}.....##
+#########.....##
+#########xx#####
+#########..#####
+################
+###############$
+
+section 1-2 Dead End
+level 1-2 Dead End
+message 1-2 Dead End
+%############
+#############
+#############
+##...{}.#####
+##.......####
+##.......xx##
+##.......####
+###.....#####
+###t#########
+###b#########
+#############
+############$
+
+section 1-3 Drawbridge
+level 1-3 Drawbridge
+message 1-3 Drawbridge
+③###########
+############
+############
+############
+###xxxxxx###
+###......###
+##........##
+##........##
+###..{}..###
+###..tn..###
+####.bu.####
+####....####
+############
+###########$
+
+section 1-4 Claw Hammer
+level 1-4 Claw Hammer
+message 1-4 Claw Hammer
+%#############
+##############
+##############
+####......####
+###{}.....####
+##t.......xx##
+##b.......xx##
+###{}.....####
+####......####
+##############
+④###########$$
+
+section 1-5 Bowling Alley
+level 1-5 Bowling Alley
+message 1-5 Bowling Alley
+%###########
+############
+############
+#####xx#####
+####....####
+####....####
+####{}{}####
+####....####
+####....####
+####.t..####
+#####b.#####
+############
+###########$
+
+section 1-4 Stick-y
+level 1-4 Stick-y
+message 1-4 Stick-y
+%#############
+##############
+##############
+####......####
+###...{}..####
+##t.......xx##
+##b.......xx##
+###...{}..####
+####......####
+##############
+#############$
+
+section 2-6 Literally Bowling Alley
+level 2-6 Literally Bowling Alley
+message 2-6 Literally Bowling Alley
+%###########
+############
+############
+#####xx#####
+#####xx#####
+#####xx#####
+###_...._###
+###_...._###
+###_...._###
+###_.{}._###
+###_t..n_###
+###_b..u_###
+#####..#####
+############
+##########$$
+
+section 2-7 Odd Bridge
+level 2-7 Odd Bridge
+message 2-7 Odd Bridge
+%#################
+##################
+##################
+############....##
+####...___......##
+##x<}..___..{}.t##
+##xx...___..{}.b##
+####...___......##
+############....##
+##################
+#################$
+
+
