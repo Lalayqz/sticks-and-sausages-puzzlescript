@@ -8,8 +8,8 @@ level_select
 level_select_solve_symbol ✓
 run_rules_on_level_start
 
-verbose_logging
-debug
+//verbose_logging
+//debug
 //
 
 ====
@@ -128,9 +128,28 @@ _floor_1_grass_cover
 ..........
 translate: up:5
 
-fixed:ground:floor_2
+_floor_2_wall_cover
 brown brown #63381D #63381D
 copy: fixed:ground:floor_1 translate: up:5
+
+fixed:ground:floor_2
+grey
+0000000000
+0........0
+0...0....0
+0..0.....0
+0........0
+0.....0..0
+0....0...0
+0........0
+0000000000
+0........0
+0..0.....0
+0.0....0.0
+0.....0..0
+0........0
+0000000000
+translate: up:10
 
 fixed:grill:floor_0
 #252525 orange red black #63381D
@@ -667,11 +686,13 @@ thing = pushable:pushable_type:is_tip_or_packed:directions:floor or fixed:fixed_
 O = background
 _ = fixed:ground:floor_0
 . = fixed:ground:floor_0 and fixed:ground:floor_1
-# = fixed:ground:floor_0 and fixed:ground:floor_1 and fixed:ground:floor_2
+/ = fixed:ground:floor_0 and fixed:ground:floor_1 and fixed:ground:floor_2
+# = / and _floor_2_wall_cover
 $ = # and scoreboard_empty
 + = fixed:ground:floor_0 and fixed:grill:floor_1
 
 X = fixed:ground:floor_0 and fixed:ground:floor_1 and goal:floor_1
+× = fixed:ground:floor_0 and goal:floor_0
 
 n = . and pushable:sausage:not_tip_or_packed:up:floor_2
 u = . and pushable:sausage:not_tip_or_packed:down:floor_2
@@ -680,7 +701,7 @@ u = . and pushable:sausage:not_tip_or_packed:down:floor_2
 t = . and pushable:stick:tip_or_packed:up:floor_2
 b = . and pushable:stick:not_tip_or_packed:down:floor_2
 
-% = _top_left_spot
+% = _top_left_spot and #
 
 player = pushable:stick:is_tip_or_packed:directions:floor
 
@@ -695,6 +716,7 @@ COLLISIONLAYERS
 
 background
 floor -> fixed:fixed_type:floor
+_floor_2_wall_cover
 goal:floor
 directions floor -> goal_border:directions:floor
 
@@ -1111,9 +1133,9 @@ message 1-5 Bowling Alley
 ############
 ###########$
 
-section 1-4 Stick-y
-level 1-4 Stick-y
-message 1-4 Stick-y
+section 1-4 Sticky
+level 1-4 Sticky
+message 1-4 Sticky
 %#############
 ##############
 ##############
@@ -1126,6 +1148,124 @@ message 1-4 Stick-y
 ##############
 #############$
 
+section 1-?
+level 1-?
+message 1-?
+%#############
+#######n######
+##n....u....##
+##u.........##
+##.#........##
+##.#........##
+##.#........##
+##t#........##
+##b#........##
+##############
+#############$
+
+
+section 2-?a
+level 2-?a
+message 2-?a
+#############
+#############
+#############
+##...{}...###
+##xxx...._###
+##xxx...__###
+#####..___###
+#####oo___###
+##xxxooo_..##
+##xxxoo....##
+##xxx...n..##
+##xxx...u..##
+####......###
+####..#######
+###....######
+###t...######
+###b...######
+#############
+%##########$$
+
+section 2-?b
+level 2-?b
+message 2-?b
+#############
+#############
+#############
+##...{}...###
+##xxx...._###
+##xxx...__###
+#####..___###
+#####oo___###
+##xxxooo_..##
+##xxxoo....##
+##xxx..{}..##
+##xxx......##
+####......###
+####..#######
+###....######
+###t...######
+###b...######
+#############
+%##########$$
+
+
+section 2-?
+level 2-?
+message 2-?
+%#############
+#######n######
+##n....u....##
+##u.........##
+##.#........##
+##.#........##
+##.#........##
+##t#........##
+##b#........##
+##############
+#############$
+
+
+section 2-??
+level 2-??
+message 2-??
+%###############
+################
+################
+###.no__..######
+##..uo___.######
+##___o_______###
+##___o_______###
+###.....______##
+###___....____##
+###___.....___##
+#######....×××##
+###{}.n....×××##
+###...u....×××##
+###t.....##×××##
+###b.....#######
+################
+#############$$$
+(
+%##############
+###############
+###############
+##ono__..######
+##ouo___.######
+##ooo_______###
+##__o_______###
+##/.///______##
+##{}.n#..____##
+##...u....×××##
+##........×××##
+##t.......×××##
+##b.......×××##
+###############
+############$$$
+)
+
+(
 section 2-6 Literally Bowling Alley
 level 2-6 Literally Bowling Alley
 message 2-6 Literally Bowling Alley
@@ -1144,10 +1284,11 @@ message 2-6 Literally Bowling Alley
 #####..#####
 ############
 ##########$$
+)
 
-section 2-7 Odd Bridge
-level 2-7 Odd Bridge
-message 2-7 Odd Bridge
+section 3-7 Odd Bridge
+level 3-7 Odd Bridge
+message 3-7 Odd Bridge
 %#################
 ##################
 ##################
