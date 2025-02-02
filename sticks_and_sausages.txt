@@ -841,9 +841,13 @@ late [_can_fall_again] -> [_do_again:fall] again
 
 ( Do pack & check if can pack )
   ( - Calculate _not_eligible_for_pack )
-  late floor [pushable:sausage:not_tip_or_packed:directions:floor no goal:floor_x] -> [pushable:sausage:not_tip_or_packed:directions:floor _not_eligible_for_pack:floor]
-  late floor [pushable:sausage:not_tip_or_packed:directions:floor pushable:stick:is_tip_or_packed:directions:floor] -> [pushable:sausage:not_tip_or_packed:directions:floor pushable:stick:is_tip_or_packed:directions:floor _not_eligible_for_pack:floor]
-  late floor [pushable:sausage:not_tip_or_packed:<:floor _not_eligible_for_pack:floor | pushable:sausage:not_tip_or_packed:>:floor] -> [pushable:sausage:not_tip_or_packed:<:floor _not_eligible_for_pack:floor | pushable:sausage:not_tip_or_packed:>:floor _not_eligible_for_pack:floor]
+    ( · Not one floor above goal )
+    late [pushable:sausage:not_tip_or_packed:directions:floor_0] -> [pushable:sausage:not_tip_or_packed:directions:floor_0 _not_eligible_for_pack:floor_0]
+    late high_floor [pushable:sausage:not_tip_or_packed:directions:high_floor no goal:lower_floor] -> [pushable:sausage:not_tip_or_packed:directions:high_floor _not_eligible_for_pack:high_floor]
+    ( · Has stick inside )
+    late floor [pushable:sausage:not_tip_or_packed:directions:floor pushable:stick:is_tip_or_packed:directions:floor] -> [pushable:sausage:not_tip_or_packed:directions:floor pushable:stick:is_tip_or_packed:directions:floor _not_eligible_for_pack:floor]
+    ( · Spread )
+    late floor [pushable:sausage:not_tip_or_packed:<:floor _not_eligible_for_pack:floor | pushable:sausage:not_tip_or_packed:>:floor] -> [pushable:sausage:not_tip_or_packed:<:floor _not_eligible_for_pack:floor | pushable:sausage:not_tip_or_packed:>:floor _not_eligible_for_pack:floor]
   ( - Do pack )
   late directions floor [_do_again:pack] [pushable:sausage:not_tip_or_packed:directions:floor no _not_eligible_for_pack:floor] -> [_do_again:pack] [pushable:sausage:tip_or_packed:directions:floor] sfx1
   ( - Order a scoreboard update )
