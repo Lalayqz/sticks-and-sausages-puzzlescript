@@ -768,7 +768,7 @@ _title_claw_hammer
 SOUNDS
 ======
 
-sfx0 3060701 ( Push )
+sfx0 33024507 ( Push ) ( Slip? 3060701 )
 sfx1 78367101 ( Insert )
 sfx2 53000505 ( Pack )
 sfx3 81019907 ( Fall onto ground )
@@ -958,6 +958,10 @@ startloop
     ( - Blocked by a inserted pushable in the same space ) // Unless current pushable has pierce or through_hole:...:this_space
   pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:this_space _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
 endloop
+
+( sfx )
+[orthogonal pushable:pushable_type:is_tip_or_packed:directions:floor] -> [orthogonal pushable:pushable_type:is_tip_or_packed:directions:floor] sfx0
+floor [> pushable:stick:tip_or_packed:>:floor | stationary pushable:sausage:not_tip_or_packed:directions:floor] -> [> pushable:stick:tip_or_packed:>:floor |  pushable:sausage:not_tip_or_packed:directions:floor] sfx1
 
 
 
