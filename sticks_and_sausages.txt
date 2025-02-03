@@ -4,6 +4,8 @@ author Lala_yqz
 sprite_size 10x10
 background_color #211209
 text_color #e3c4d7
+key_repeat_interval 0.2 // [BUG] Document says the default is 0.15 but it's actually 0.2.
+again_interval 0.15
 level_select
 level_select_solve_symbol ✓
 run_rules_on_level_start
@@ -768,12 +770,19 @@ _title_claw_hammer
 SOUNDS
 ======
 
-sfx0 33024507 ( Push ) ( Slip? 3060701 )
-sfx1 78367101 ( Insert )
-sfx2 53000505 ( Pack )
-sfx3 81019907 ( Fall onto ground )
-sfx4 81700105 ( Fall into void )
-sfx5 80064702 ( Grill )
+sfx0 33024507 ( Move )
+sfx1 56189707:15 ( Block )
+sfx2 5822107 ( Slip )
+sfx3 78367101 ( Insert )
+sfx4 53000505 ( Pack )
+sfx5 81019907 ( Fall onto ground )
+sfx6 81700105 ( Fall into void )
+sfx7 80064702 ( Grill )
+
+restart 17145300
+undo 91736300
+showMessage 60969302 (55305902)
+//endlevel 6246906  // There is already a pack sfx at end of level, so no need for another one.
 
 =====
 RULES     
@@ -795,7 +804,7 @@ late [_through_hole:pushable_type:floor:directions:which_space] -> []
 
 ( Do grill & check if can grill )
   ( - Do grill )
-  late low_floor [_do_again:grill] [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] -> [_do_again:grill] [fixed:grill:low_floor] sfx5
+  late low_floor [_do_again:grill] [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] -> [_do_again:grill] [fixed:grill:low_floor] sfx7
   late [_do_again:grill] -> []
   ( - Check if can grill )
   late low_floor [_top_left_spot no _do_again:grill] [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] -> [_top_left_spot _do_again:grill] [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor] again
@@ -816,15 +825,15 @@ startloop
     + late pushable_type floor [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor] -> [pushable:pushable_type:is_tip_or_packed:<:floor _supported:floor | pushable:pushable_type:is_tip_or_packed:>:floor _supported:floor]
   ( Do fall )
     ( - Fall into void below )
-    late [_do_again:fall] [pushable:pushable_type:is_tip_or_packed:directions:floor_0] -> [_do_again:fall] [] sfx4
+    late [_do_again:fall] [pushable:pushable_type:is_tip_or_packed:directions:floor_0] -> [_do_again:fall] [] sfx6
     ( - Fall into space below )
     // When 2 objects are on top of each other, make the bottom one fall first. So no pushable:...:lower_floor.
     // After something falls, add a _just_fell to that target space so it won't fall again.
     late pushable_type is_tip_or_packed directions high_floor [_do_again:fall] [pushable:pushable_type:is_tip_or_packed:directions:high_floor no _supported:high_floor no _just_fell:high_floor no pushable:pushable_type:is_tip_or_packed_2:directions_2:lower_floor] ->[_do_again:fall] [pushable:pushable_type:is_tip_or_packed:directions:lower_floor _just_fell:lower_floor]
     ( PLay sound if it falls onto ground )
-    late high_floor [_just_fell:high_floor fixed:fixed_type:lower_floor] -> [_just_fell:high_floor fixed:fixed_type:lower_floor] sfx3
+    late high_floor [_just_fell:high_floor fixed:fixed_type:lower_floor] -> [_just_fell:high_floor fixed:fixed_type:lower_floor] sfx5
     ( PLay sound if it falls onto something supported )
-    late high_floor [_just_fell:high_floor _supported:lower_floor] -> [_just_fell:high_floor _supported:lower_floor] sfx3
+    late high_floor [_just_fell:high_floor _supported:lower_floor] -> [_just_fell:high_floor _supported:lower_floor] sfx5
     late [_just_fell:floor] -> []
   ( Check if can fall )
     ( - Fall into space below )
@@ -851,7 +860,7 @@ late [_can_fall_again] -> [_do_again:fall] again
     ( · Spread )
     late floor [pushable:sausage:not_tip_or_packed:<:floor _not_eligible_for_pack:floor | pushable:sausage:not_tip_or_packed:>:floor] -> [pushable:sausage:not_tip_or_packed:<:floor _not_eligible_for_pack:floor | pushable:sausage:not_tip_or_packed:>:floor _not_eligible_for_pack:floor]
   ( - Do pack )
-  late directions floor [_do_again:pack] [pushable:sausage:not_tip_or_packed:directions:floor no _not_eligible_for_pack:floor] -> [_do_again:pack] [pushable:sausage:tip_or_packed:directions:floor] sfx2
+  late directions floor [_do_again:pack] [pushable:sausage:not_tip_or_packed:directions:floor no _not_eligible_for_pack:floor] -> [_do_again:pack] [pushable:sausage:tip_or_packed:directions:floor] sfx4
   ( - Order a scoreboard update )
   late [_do_again:pack] -> [_do_again:pack _update_scoreboard]
   late [_do_again:pack] -> []
@@ -960,8 +969,14 @@ startloop
 endloop
 
 ( sfx )
-[orthogonal pushable:pushable_type:is_tip_or_packed:directions:floor] -> [orthogonal pushable:pushable_type:is_tip_or_packed:directions:floor] sfx0
-floor [> pushable:stick:tip_or_packed:>:floor | stationary pushable:sausage:not_tip_or_packed:directions:floor] -> [> pushable:stick:tip_or_packed:>:floor |  pushable:sausage:not_tip_or_packed:directions:floor] sfx1
+  ( - Move )
+  [orthogonal pushable:pushable_type:is_tip_or_packed:directions:floor] -> [orthogonal pushable:pushable_type:is_tip_or_packed:directions:floor] sfx0
+  ( - Block )
+  [stationary pushable:stick:tip_or_packed:directions:floor _input:directions] -> [pushable:stick:tip_or_packed:directions:floor _input:directions] sfx1
+  ( - Slip )
+  floor [> pushable:sausage:not_tip_or_packed:<:floor _force:slip:>:sausage:floor:uncountered] -> [> pushable:sausage:not_tip_or_packed:<:floor _force:slip:>:sausage:floor:uncountered] sfx2
+  ( - Insert )
+  floor [> pushable:stick:tip_or_packed:>:floor | stationary pushable:sausage:not_tip_or_packed:directions:floor] -> [> pushable:stick:tip_or_packed:>:floor |  pushable:sausage:not_tip_or_packed:directions:floor] sfx3
 
 
 
