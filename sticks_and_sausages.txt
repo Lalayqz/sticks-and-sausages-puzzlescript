@@ -38,7 +38,7 @@ is_tip_or_packed_2 = is_tip_or_packed
 directions_2 = directions
 force_type_2 = force_type
 
-again_round_type = grill fall pack
+again_round_type = grill fall pack win
 
 ========
 MAPPINGS
@@ -75,7 +75,7 @@ background
 black     
 
 fixed:ground:floor_0
-#C6743D #AF6736 #63381D #422513 #211209
+#C6743D #AF6736 #66391E #4C2A16 #331B0E ( V in HSV: 77-68-40-30-20 )
 1000000001
 0000000000
 0000000000
@@ -93,7 +93,7 @@ fixed:ground:floor_0
 4444444444
 
 fixed:ground:floor_1
-#12A52D #0F8E27 #0D7A21 #63381D
+#12A52D #0F8E27 #0D7A21 #66391E
 1000000001
 0000000000
 0000000000
@@ -112,7 +112,7 @@ fixed:ground:floor_1
 translate: up:5
 
 _floor_1_grass_cover
-#63381D
+#66391E
 ..........
 ..........
 ..........
@@ -131,7 +131,7 @@ _floor_1_grass_cover
 translate: up:5
 
 _floor_2_wall_cover
-brown brown #63381D #63381D
+brown brown #66391E #66391E
 copy: fixed:ground:floor_1 translate: up:5
 
 fixed:ground:floor_2
@@ -154,7 +154,7 @@ grey
 translate: up:10
 
 fixed:grill:floor_0
-#252525 orange red black #63381D
+#252525 orange red black #66391E
 2200220011
 2200220011
 0000000000
@@ -172,11 +172,11 @@ fixed:grill:floor_0
 4444444444
 
 fixed:grill:floor_1
-#252525 orange red black #63381D
+#252525 orange red black #66391E
 copy: fixed:grill:floor_0 translate: up:5
 
 fixed:grill:floor_2
-#252525 orange red black #63381D
+#252525 orange red black #66391E
 copy: fixed:grill:floor_1 translate: up:5
 
 pushable:pushable_type:is_tip_or_packed:directions:floor
@@ -449,9 +449,9 @@ copy: goal_border:directions:floor_1 translate: up:5
 scoreboard_empty
 #211209
 ..........
+..........
 ...000....
 ..00000...
-.0000000..
 .0000000..
 .0000000..
 .0000000..
@@ -467,9 +467,9 @@ scoreboard_empty
 scoreboard_filled
 #f10914 #787878
 ..........
+..........
 ...111....
 ..00000...
-.0000000..
 .0000000..
 .0000000..
 .0000000..
@@ -620,7 +620,10 @@ transparent
 _insert_force_source:pushable_type:floor
 transparent
 
-_top_left_spot
+_init
+transparent
+
+_temp_variable_holder
 transparent
 
 _can_fall_again
@@ -636,6 +639,9 @@ _just_fell:floor
 transparent
 
 _not_eligible_for_pack:floor
+transparent
+
+_rightmost_scoreboard
 transparent
 
 _update_scoreboard
@@ -724,17 +730,17 @@ u = . and pushable:sausage:not_tip_or_packed:down:floor_2
 t = . and pushable:stick:tip_or_packed:up:floor_2
 b = . and pushable:stick:not_tip_or_packed:down:floor_2
 
-% = _top_left_spot and #
-
 player = pushable:stick:is_tip_or_packed:directions:floor
 
 < = x and pushable:sausage:not_tip_or_packed:left:floor_2
 > = x and pushable:sausage:not_tip_or_packed:right:floor_2
 
-① = # and _title_its_oily
-② = # and _title_no_escape
-③ = # and _title_drawbridge
-④ = # and _title_claw_hammer
+% = # and _init and _temp_variable_holder
+
+① = % and _title_its_oily
+② = % and _title_no_escape
+③ = % and _title_drawbridge
+④ = % and _title_claw_hammer
 
 ================
 COLLISIONLAYERS
@@ -768,7 +774,8 @@ _pierce:pushable_type:floor:directions
 pushable_type directions which_space -> _through_hole:pushable_type:floor:directions:which_space
 _input:directions
 
-_top_left_spot
+_init
+_temp_variable_holder
 _can_fall_again
 again_round_type -> _do_again:again_round_type
 floor -> _supported:floor
@@ -779,6 +786,7 @@ _floor_1_grass_cover
 
 scoreboard_empty
 scoreboard_filled
+_rightmost_scoreboard
 _update_scoreboard
 floor -> _already_calculated_for_scoreboard:floor
 _scoreboard_calculation_spread_ongoing
@@ -825,10 +833,10 @@ late [_through_hole:pushable_type:floor:directions:which_space] -> []
 
 ( Do grill & check if can grill )
   ( - Do grill )
-  late low_floor [_do_again:grill] [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] -> [_do_again:grill] [fixed:grill:low_floor] sfx7
+  late low_floor [_do_again:grill] [fixed:grill:low_floor pushable:stick:is_tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] -> [_do_again:grill] [fixed:grill:low_floor] sfx7
   late [_do_again:grill] -> []
   ( - Check if can grill )
-  late low_floor [_top_left_spot no _do_again:grill] [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] -> [_top_left_spot _do_again:grill] [fixed:grill:low_floor pushable:stick:tip_or_packed:directions:higher_floor] again
+  late low_floor [_temp_variable_holder no _do_again:grill] [fixed:grill:low_floor pushable:stick:is_tip_or_packed:directions:higher_floor no pushable:sausage:not_tip_or_packed:directions:higher_floor] -> [_temp_variable_holder _do_again:grill] [fixed:grill:low_floor pushable:stick:is_tip_or_packed:directions:higher_floor] again
 
 
 ( Do fall & check if can fall )
@@ -858,9 +866,9 @@ startloop
     late [_just_fell:floor] -> []
   ( Check if can fall )
     ( - Fall into space below )
-    late high_floor [_top_left_spot no _can_fall_again] [pushable:pushable_type:is_tip_or_packed:directions:high_floor no _supported:high_floor] -> [_top_left_spot _can_fall_again] [pushable:pushable_type:is_tip_or_packed:directions:high_floor] 
+    late high_floor [_temp_variable_holder no _can_fall_again] [pushable:pushable_type:is_tip_or_packed:directions:high_floor no _supported:high_floor] -> [_temp_variable_holder _can_fall_again] [pushable:pushable_type:is_tip_or_packed:directions:high_floor] 
     ( - Fall into void below )
-    late [_top_left_spot no _can_fall_again] [pushable:pushable_type:is_tip_or_packed:directions:floor_0] -> [_top_left_spot _can_fall_again] [pushable:pushable_type:is_tip_or_packed:directions:floor_0]
+    late [_temp_variable_holder no _can_fall_again] [pushable:pushable_type:is_tip_or_packed:directions:floor_0] -> [_temp_variable_holder _can_fall_again] [pushable:pushable_type:is_tip_or_packed:directions:floor_0]
 endloop
 ( Clear _supported )
 late [_supported:floor] -> []
@@ -886,9 +894,14 @@ late [_can_fall_again] -> [_do_again:fall] again
   late [_do_again:pack] -> [_do_again:pack _update_scoreboard]
   late [_do_again:pack] -> []
   ( - Check if can pack )
-  late floor [_top_left_spot no _do_again:pack] [pushable:sausage:not_tip_or_packed:directions:floor no _not_eligible_for_pack:floor] -> [_top_left_spot _do_again:pack] [pushable:sausage:not_tip_or_packed:directions:floor] again
+  late floor [_temp_variable_holder no _do_again:pack] [pushable:sausage:not_tip_or_packed:directions:floor no _not_eligible_for_pack:floor] -> [_temp_variable_holder _do_again:pack] [pushable:sausage:not_tip_or_packed:directions:floor] again
   ( - Clear _not_eligible_for_pack )
   late [_not_eligible_for_pack:floor] -> []
+
+
+( Win )
+// Check win process is in "Update scoreboard"
+late [_temp_variable_holder _do_again:win] -> [_temp_variable_holder] win
 
 
 ( Update scoreboard )
@@ -897,16 +910,18 @@ late [_can_fall_again] -> [_do_again:fall] again
   startloop
     ( - Find a packed suausage that's not already calculated )
     // I use _scoreboard_calculation_spread_ongoing to make sure only one tile is picked per loop.
-    late floor [_top_left_spot _update_scoreboard no _scoreboard_calculation_spread_ongoing] [pushable:sausage:tip_or_packed:directions:floor no _already_calculated_for_scoreboard:floor] -> [_top_left_spot _update_scoreboard _scoreboard_calculation_spread_ongoing] [pushable:sausage:tip_or_packed:directions:floor _already_calculated_for_scoreboard:floor]
+    late floor [_temp_variable_holder _update_scoreboard no _scoreboard_calculation_spread_ongoing] [pushable:sausage:tip_or_packed:directions:floor no _already_calculated_for_scoreboard:floor] -> [_temp_variable_holder _update_scoreboard _scoreboard_calculation_spread_ongoing] [pushable:sausage:tip_or_packed:directions:floor _already_calculated_for_scoreboard:floor]
     ( - Spread _already_calculated_for_scoreboard within sausage )
     late floor [pushable:sausage:tip_or_packed:<:floor _already_calculated_for_scoreboard:floor | pushable:sausage:tip_or_packed:>:floor] -> [pushable:sausage:tip_or_packed:<:floor _already_calculated_for_scoreboard:floor | pushable:sausage:tip_or_packed:>:floor _already_calculated_for_scoreboard:floor]
     ( - Add one sausage to scoreboard )
     // If scoreboard is already full, then _scoreboard_calculation_spread_ongoing persists into the next loop, then no rule is executed there.
-      ( · Leftmost sausage in scoreboard )
-      late right [_top_left_spot _scoreboard_calculation_spread_ongoing] [no scoreboard_empty no scoreboard_filled | scoreboard_empty] -> [_top_left_spot] [ | scoreboard_filled]
-      ( · Non-leftmost sausage in scoreboard )
-      late right [_top_left_spot _scoreboard_calculation_spread_ongoing] [scoreboard_filled | scoreboard_empty] -> [_top_left_spot] [scoreboard_filled | scoreboard_filled]
+      ( · Rightmost sausage in scoreboard )
+      late right [_temp_variable_holder _scoreboard_calculation_spread_ongoing] [_rightmost_scoreboard scoreboard_empty] -> [_temp_variable_holder] [_rightmost_scoreboard scoreboard_filled]
+      ( · Non-rightmost sausage in scoreboard )
+      late right [_temp_variable_holder _scoreboard_calculation_spread_ongoing] [scoreboard_empty | scoreboard_filled] -> [_temp_variable_holder] [scoreboard_filled | scoreboard_filled]
   endloop
+  ( - Check win )
+  late right [_temp_variable_holder _update_scoreboard] [no scoreboard_empty no scoreboard_filled | scoreboard_filled] -> [_temp_variable_holder _update_scoreboard _do_again:win] [| scoreboard_filled]
   ( - Remove temp variables )
   late [_already_calculated_for_scoreboard:floor] -> []
   late [_scoreboard_calculation_spread_ongoing] -> []
@@ -919,6 +934,12 @@ late floor [pushable:stick:not_tip_or_packed:down:floor] -> [pushable:stick:not_
 
 
 
+
+( Level init calculations )
+  ( - Calculate _rightmost_scoreboard )
+  [_init] [scoreboard_empty] -> [_init] [scoreboard_empty _rightmost_scoreboard]
+  right [_init] [scoreboard_empty _rightmost_scoreboard | scoreboard_empty] -> [_init] [scoreboard_empty | scoreboard_empty]
+[_init] -> []
 
 ( Clear temp sprites )
 [_stick_bottom:floor] -> []
@@ -1102,7 +1123,7 @@ level push
 section 1-1 It's Oily
 level 1-1 It's Oily
 message 1-1 It's Oily
-%###############
+################
 ################
 ################
 ################
@@ -1119,7 +1140,7 @@ message 1-1 It's Oily
 section 1-2 No Escape
 level 1-2 No Escape
 message 1-2 No Escape
-%############
+#############
 #############
 #############
 ##...{}.#####
@@ -1153,7 +1174,7 @@ message 1-3 Drawbridge
 section 1-4 Claw Hammer
 level 1-4 Claw Hammer
 message 1-4 Claw Hammer
-%#############
+##############
 ##############
 ##############
 ####......####
@@ -1168,7 +1189,7 @@ message 1-4 Claw Hammer
 section 1-5 Bowling Alley
 level 1-5 Bowling Alley
 message 1-5 Bowling Alley
-%###########
+############
 ############
 ############
 #####xx#####
@@ -1180,12 +1201,12 @@ message 1-5 Bowling Alley
 ####.t..####
 #####b.#####
 ############
-###########$
+%##########$
 
 section 1-6 
 level 1-6 
 message 1-6 
-%##############
+###############
 ###############
 ###############
 ###........####
@@ -1193,12 +1214,12 @@ message 1-6
 ##x.b.u....####
 ###........####
 ###############
-#############$$
+%############$$
 
 section 1-7 Odd Bridge
 level 1-7 Odd Bridge
 message 1-7 Odd Bridge
-%#################
+##################
 ##################
 ##################
 ############....##
@@ -1208,27 +1229,27 @@ message 1-7 Odd Bridge
 ####...___..{}..##
 ############....##
 ##################
-#################$
+%################$
 
-section 1-? Sticky
-level 1-? Sticky
-message 1-? Sticky
-%#############
-##############
-##############
-####......####
-###...{}..####
-##t.......xx##
-##b.......xx##
-###...{}..####
-####......####
-##############
-#############$
+section 3-? Sticky
+level 3-? Sticky
+message 3-? Sticky
+#################
+#################
+#################
+####..#####xx####
+###....+++....###
+##t..n..+..{}.x##
+##b..u..+.....x##
+###....+++....###
+####..#####xx####
+#################
+%##############$$
 
 section 1-?
 level 1-?
 message 1-?
-%#############
+##############
 #######n######
 ##n....u....##
 ##u.........##
@@ -1243,7 +1264,7 @@ message 1-?
 section 2-1 Afterlife
 level 2-1 Afterlife
 message 2-1 Afterlife
-%#########
+##########
 ##########
 ##########
 ###xxxx###
@@ -1286,7 +1307,7 @@ message 2-?a
 ###t...######
 ###b...######
 #############
-%##########$$
+###########$$
 
 section 2-?b
 level 2-?b
@@ -1309,13 +1330,13 @@ message 2-?b
 ###t...######
 ###b...######
 #############
-%##########$$
+###########$$
 
 
 section 2-?
 level 2-?
 message 2-?
-%#############
+##############
 #######n######
 ##n....u....##
 ##u.........##
@@ -1330,7 +1351,7 @@ message 2-?
 section 2-? Hiking Basics
 level 2-? Hiking Basics
 message 2-? Hiking Basics
-%###############
+################
 ################
 ################
 ##xxnn...##...##
@@ -1346,7 +1367,7 @@ message 2-? Hiking Basics
 ################
 #############$$$
 ( Alternative:
-%###############
+################
 ################
 ################
 ##xxnn...##...##
@@ -1367,7 +1388,7 @@ message 2-? Hiking Basics
 section 2-? Inject
 level 2-? Inject
 message 2-? Inject
-%###############
+################
 ################
 ################
 ###.no__..######
@@ -1385,7 +1406,7 @@ message 2-? Inject
 ################
 #############$$$
 ( Alternative:
-%###############
+################
 ################
 ################
 ###.no__..######
@@ -1408,7 +1429,7 @@ message 2-? Inject
 section 2-6 Literally Bowling Alley
 level 2-6 Literally Bowling Alley
 message 2-6 Literally Bowling Alley
-%###########
+############
 ############
 ############
 #####xx#####
