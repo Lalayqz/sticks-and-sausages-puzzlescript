@@ -38,7 +38,9 @@ is_tip_or_packed_2 = is_tip_or_packed
 directions_2 = directions
 force_type_2 = force_type
 
-again_round_type = grill fall pack win
+again_round_type = grill fall pack
+count = 0 1 2 3 4 5 6 7 8 9
+low_count = 0 1 2 3 4 5 6 7 8
 
 ========
 MAPPINGS
@@ -62,6 +64,8 @@ floor_0 floor_1 -> floor_1 floor_2
 high_floor => lower_floor
 floor_1 floor_2 -> floor_0 floor_1
 
+low_count => next_count
+0 1 2 3 4 5 6 7 8 -> 1 2 3 4 5 6 7 8 9
 
 ========
 OBJECTS
@@ -653,6 +657,12 @@ transparent
 _scoreboard_calculation_spread_ongoing
 transparent
 
+_win_count:count
+transparent
+
+_already_counted
+transparent
+
 _title_its_oily
 transparent #211209
 111000000000111000000000111110001000001000000000000000011100001000011000000000
@@ -790,6 +800,8 @@ _rightmost_scoreboard
 _update_scoreboard
 floor -> _already_calculated_for_scoreboard:floor
 _scoreboard_calculation_spread_ongoing
+_win_count:count
+_already_counted
 
 --
 
@@ -901,7 +913,9 @@ late [_can_fall_again] -> [_do_again:fall] again
 
 ( Win )
 // Check win process is in "Update scoreboard"
-late [_temp_variable_holder _do_again:win] -> [_temp_variable_holder] win
+late low_count [_temp_variable_holder _win_count:low_count no _already_counted] -> [_temp_variable_holder _win_count:next_count _already_counted] again
+late [_temp_variable_holder _win_count:3] -> [_temp_variable_holder] win
+late [_already_counted] -> []
 
 
 ( Update scoreboard )
@@ -921,7 +935,7 @@ late [_temp_variable_holder _do_again:win] -> [_temp_variable_holder] win
       late right [_temp_variable_holder _scoreboard_calculation_spread_ongoing] [scoreboard_empty | scoreboard_filled] -> [_temp_variable_holder] [scoreboard_filled | scoreboard_filled]
   endloop
   ( - Check win )
-  late right [_temp_variable_holder _update_scoreboard] [no scoreboard_empty no scoreboard_filled | scoreboard_filled] -> [_temp_variable_holder _update_scoreboard _do_again:win] [| scoreboard_filled]
+  late right [_temp_variable_holder _update_scoreboard] [no scoreboard_empty no scoreboard_filled | scoreboard_filled] -> [_temp_variable_holder _update_scoreboard _win_count:0] [| scoreboard_filled] again
   ( - Remove temp variables )
   late [_already_calculated_for_scoreboard:floor] -> []
   late [_scoreboard_calculation_spread_ongoing] -> []
@@ -1085,14 +1099,6 @@ subroutine remove_force_from_old_moving_direction
   ( Remove all simple/slip force from facing tile in old moving direction )
   pushable_type_2 floor [_old_moving_direction:pushable_type:floor:> | pushable:pushable_type_2:is_tip_or_packed:directions:floor _force:force_type_simple_or_slip:directions:pushable_type_2:floor:is_countered no _old_moving_direction:pushable_type_2:floor:>] -> [_old_moving_direction:pushable_type:floor:> | stationary pushable:pushable_type_2:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type_2:floor] gosub calculate_moving_direction
   [_old_moving_direction:pushable_type:floor:directions] -> []
-
-
-=============
-WINCONDITIONS
-=============
-
-no scoreboard_empty
-
 
 =======     
 LEVELS
@@ -1283,7 +1289,7 @@ message 2-1 Afterlife
 ##___...##
 ##__.{>x##
 ##########
-#######$$$
+%######$$$
 
 
 section 2-?a
