@@ -8,6 +8,8 @@ key_repeat_interval 0.2 // [BUG] Document says the default is 0.15 but it's actu
 again_interval 0.15
 level_select
 level_select_solve_symbol ✓
+level_select_lock
+level_select_unlocked_rollover 3
 run_rules_on_level_start
 
 //verbose_logging
@@ -729,9 +731,11 @@ _ = fixed:ground:floor_0
 # = / and _floor_2_wall_cover
 $ = # and scoreboard_empty
 + = fixed:ground:floor_0 and fixed:grill:floor_1
+♯ = fixed:grill:floor_0
 
 X = fixed:ground:floor_0 and fixed:ground:floor_1 and goal:floor_1
 × = fixed:ground:floor_0 and goal:floor_0
+* = + and goal:floor_1
 
 n = . and pushable:sausage:not_tip_or_packed:up:floor_2
 u = . and pushable:sausage:not_tip_or_packed:down:floor_2
@@ -744,6 +748,7 @@ player = pushable:stick:is_tip_or_packed:directions:floor
 
 < = x and pushable:sausage:not_tip_or_packed:left:floor_2
 > = x and pushable:sausage:not_tip_or_packed:right:floor_2
+m = _ and pushable:sausage:not_tip_or_packed:up:floor_2
 
 % = # and _init and _temp_variable_holder
 
@@ -972,7 +977,7 @@ floor [> pushable:stick:tip_or_packed:>:floor | pushable:sausage:not_tip_or_pack
   ( - Calculate through_hole:...:this_space )
 floor [pushable:stick:is_tip_or_packed:>:floor pushable:sausage:not_tip_or_packed:directions:floor] -> [pushable:stick:is_tip_or_packed:>:floor pushable:sausage:not_tip_or_packed:directions:floor _through_hole:stick:floor:>:this_space _through_hole:stick:floor:<:this_space _through_hole:sausage:floor:>:this_space _through_hole:sausage:floor:<:this_space]
   ( - Calculate through_hole:...:next_space )
-floor [pushable:stick:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:directions:floor] -> [pushable:stick:is_tip_or_packed:<:floor _through_hole:stick:floor:>:next_space | pushable:sausage:not_tip_or_packed:directions:floor _through_hole:sausage:floor:<:next_space]
+floor [pushable:stick:is_tip_or_packed:<:floor | pushable:stick:is_tip_or_packed:>:floor pushable:sausage:not_tip_or_packed:directions:floor] -> [pushable:stick:is_tip_or_packed:<:floor _through_hole:stick:floor:>:next_space | pushable:stick:is_tip_or_packed:>:floor pushable:sausage:not_tip_or_packed:directions:floor _through_hole:sausage:floor:<:next_space]
 
 
 startloop
@@ -987,23 +992,23 @@ startloop
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor pushable:opposite_pushable_type:is_tip_or_packed:directions:floor no _force:insert:>:opposite_pushable_type:floor:is_countered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor pushable:opposite_pushable_type:is_tip_or_packed:directions:floor _force:insert:>:opposite_pushable_type:floor:uncountered _insert_force_source:pushable_type:floor _calculate_moving_direction:opposite_pushable_type:floor] gosub calculate_moving_direction
   // [TODO?] If the object you are pushing is moving in the same direction driven by an insert force, then it should not be pushed (because you can't touch it!). This is implemented by adding "no force:insert:>:sausage:uncountered" in the following rules, which is only a makeshift, and only works when there are no multiple objects & no strangely-shaped objects.
   ( - Push unpacked opposing sausage )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:<:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:<:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:<:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:<:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
   ( - Push unpacked side sausage )
     ( [Rotation A] [Simple + Slip] )
     // The following 2 rules already did this job, but this rule is added to make the rule process shorter
     // If you remove "is_tip_or_packed" from rule prefix, then the total instruction count is lower. This is because in the compiled instructions, something like "pushable:...:is_tip_or_packed:..." can be used.
     // If you remove the "no ..." from the rule, then the total instruction count is higher, because when "no ..." is used, contradictory rules like "X no X" won't get compiled.
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:^:floor no _force:simple:>:sausage:floor:is_countered no _force:slip:v:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:simple:>:sausage:floor:uncountered _force:slip:v:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:^:floor no _force:simple:>:sausage:floor:is_countered no _force:slip:v:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:simple:>:sausage:floor:uncountered _force:slip:v:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
     ( [Rotation A] [Simple] )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:^:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:^:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
     ( [Rotation A] [Slip] )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:^:floor no _force:slip:v:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:slip:v:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:^:floor no _force:slip:v:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:slip:v:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
     ( [Rotation B] [Simple + Slip] )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:v:floor no _force:simple:>:sausage:floor:is_countered no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:simple:>:sausage:floor:uncountered _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:v:floor no _force:simple:>:sausage:floor:is_countered no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:simple:>:sausage:floor:uncountered _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
     ( [Rotation B] [Simple] )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:v:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:v:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
     ( [Rotation B] [Slip] )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no pushable:pushable_type:is_tip_or_packed:<:floor | pushable:sausage:not_tip_or_packed:v:floor no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:v:floor no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
   ( - Push packed sausage )
   floor [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:tip_or_packed:directions:floor no _force:simple:>:sausage:floor:is_countered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:tip_or_packed:directions:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
   
@@ -1104,28 +1109,6 @@ subroutine remove_force_from_old_moving_direction
 LEVELS
 =======
 
-
-(
-section push
-level push
-
-%#############
-##############
-##############
-##++....∩...##
-##++....U...##
-##OO.#{}{}..##
-###.....{}{}##
-##.#OO..t...##
-##..OO..b...##
-##.XX.___...##
-##.XX.___{}.##
-##..{}___.{}##
-##############
-##############
-)
-
-
 section 1-1 It's Oily
 level 1-1 It's Oily
 message 1-1 It's Oily
@@ -1159,10 +1142,26 @@ message 1-2 No Escape
 #############
 ②###########$
 
-section 1-3 Drawbridge
-level 1-3 Drawbridge
-message 1-3 Drawbridge
-############
+section 1-3 Flip-flop
+level 1-3 Flip-flop
+message 1-3 Flip-flop
+#############
+#############
+#############
+##t........##
+##b..nxx...##
+#####u##..###
+##...{}....##
+##...#.....##
+##.........##
+###.......###
+#############
+%###########$
+
+// Hard, because people are trying to insert.
+section 1-4 Drawbridge
+level 1-4 Drawbridge
+message 1-4 Drawbridge
 ############
 ############
 ############
@@ -1175,11 +1174,40 @@ message 1-3 Drawbridge
 ####.bu.####
 ####....####
 ############
-③##########$
+%##########$
 
-section 1-4 Claw Hammer
-level 1-4 Claw Hammer
-message 1-4 Claw Hammer
+section 1-5 Out of Order
+level 1-5 Out of Order
+message 1-5 Out of Order
+###############
+###############
+###############
+###........####
+##x.t.n.{}.xx##
+##x.b.u....####
+###........####
+###############
+%############$$
+
+section 1-6 Odd Bridge
+level 1-6 Odd Bridge
+message 1-6 Odd Bridge
+##################
+##################
+##################
+############....##
+####...___......##
+##x<}..___..{}.t##
+##xx...___.....b##
+####...___..{}..##
+############....##
+##################
+%################$
+
+// Hard, because pulling the sausage up at the left/right matters.
+section 1-7 Claw Hammer
+level 1-7 Claw Hammer
+message 1-7 Claw Hammer
 ##############
 ##############
 ##############
@@ -1190,11 +1218,11 @@ message 1-4 Claw Hammer
 ###{}.....####
 ####......####
 ##############
-④###########$$
+%###########$$
 
-section 1-5 Bowling Alley
-level 1-5 Bowling Alley
-message 1-5 Bowling Alley
+section 1-8 Bowling Alley
+level 1-8 Bowling Alley
+message 1-8 Bowling Alley
 ############
 ############
 ############
@@ -1209,67 +1237,105 @@ message 1-5 Bowling Alley
 ############
 %##########$
 
-section 1-6 
-level 1-6 
-message 1-6 
-###############
-###############
-###############
-###........####
-##x.t.n.{}.xx##
-##x.b.u....####
-###........####
-###############
-%############$$
-
-section 1-7 Odd Bridge
-level 1-7 Odd Bridge
-message 1-7 Odd Bridge
-##################
-##################
-##################
-############....##
-####...___......##
-##x<}..___..{}.t##
-##xx...___.....b##
-####...___..{}..##
-############....##
-##################
-%################$
-
-section 3-? Sticky
-level 3-? Sticky
-message 3-? Sticky
-#################
-#################
-#################
-####..#####xx####
-###....+++....###
-##t..n..+..{}.x##
-##b..u..+.....x##
-###....+++....###
-####..#####xx####
-#################
-%##############$$
-
-section 1-?
-level 1-?
-message 1-?
-##############
-#######n######
-##n....u....##
-##u.........##
-##.#........##
-##.#........##
-##.#........##
-##t#........##
-##b#........##
-##############
-#############$
-
 section 2-1 Afterlife
 level 2-1 Afterlife
 message 2-1 Afterlife
+#########
+#########
+#########
+##..n.x##
+##..u.x##
+##.######
+##xx.####
+##...####
+##...####
+##{}#####
+##..#####
+##.t#####
+##.b#####
+#########
+%######$$
+
+section 2-2 Crossroad
+level 2-2 Crossroad
+message 2-2 Crossroad
+###########
+###########
+###########
+##....t####
+##....b####
+##.##{}####
+##...xxn.##
+##...xxu.##
+#####..#.##
+#####..#.##
+#####....##
+#####....##
+###########
+%########$$
+
+section 2-3 Where?
+level 2-3 Where?
+message 2-3 Where?
+#############
+#############
+#############
+##...{}...###
+##xxx...._###
+##xxx...__###
+#####..___###
+#####oo___###
+##xxxooo_..##
+##xxxoo....##
+##xxx...n..##
+##xxx...u..##
+####......###
+####..#######
+###....######
+###t...######
+###b...######
+#############
+%##########$$
+
+section 2-4 Hiking Basics
+level 2-4 Hiking Basics
+message 2-4 Hiking Basics
+################
+################
+################
+##xxnn...##...##
+##xxuu...##...##
+####.....##...##
+####ooooo##.#.##
+####ooooo...xx##
+####ooooo#.#xx##
+##...{}n....xx##
+##.....u....xx##
+##t.........xx##
+##b.........xx##
+################
+%############$$$
+( Alternative: no!! 4-lrngth vertical
+################
+################
+################
+##xxnn...##...##
+##xxuu...##...##
+####.....##...##
+####ooooo#..#.##
+####ooooo.#.xx##
+####ooooo#.#xx##
+##...{}nn...xx##
+##.....uu...xx##
+##t.........xx##
+##b.........xx##
+################
+############$$$$
+)
+
+section 2-5 Like an Engineer
+level 2-5 Like an Engineer
+message 2-5 Like an Engineer
 ##########
 ##########
 ##########
@@ -1292,32 +1358,42 @@ message 2-1 Afterlife
 %######$$$
 
 
-section 2-?a
-level 2-?a
-message 2-?a
+section 2-6 Sharing
+level 2-6 Sharing
+message 2-6 Sharing
 #############
 #############
 #############
-##...{}...###
-##xxx...._###
-##xxx...__###
-#####..___###
-#####oo___###
-##xxxooo_..##
-##xxxoo....##
-##xxx...n..##
-##xxx...u..##
-####......###
-####..#######
-###....######
-###t...######
-###b...######
+##xxx___xxx##
+###_______###
+###___m___###
+##....u....##
+##{}.....{}##
+##t........##
+##b........##
 #############
-###########$$
+%##########$$
+( Alternate:
+section 2-? !?-2
+level 2-? !?-2
+message 2-? !?-2
+############
+############
+############
+##xxx__xxx##
+###×_____###
+###×_m___###
+##...u....##
+##{}....{}##
+##t.......##
+##b.......##
+############
+%########$$$
+)
 
-section 2-?b
-level 2-?b
-message 2-?b
+section 2-7 Well, Where?
+level 2-7 Well, Where?
+message 2-7 Well, Where?
 #############
 #############
 #############
@@ -1336,64 +1412,11 @@ message 2-?b
 ###t...######
 ###b...######
 #############
-###########$$
+%##########$$
 
-
-section 2-?
-level 2-?
-message 2-?
-##############
-#######n######
-##n....u....##
-##u.........##
-##.#........##
-##.#........##
-##.#........##
-##t#........##
-##b#........##
-##############
-#############$
-
-section 2-? Hiking Basics
-level 2-? Hiking Basics
-message 2-? Hiking Basics
-################
-################
-################
-##xxnn...##...##
-##xxuu...##...##
-####.....##...##
-####ooooo##.#.##
-####ooooo...xx##
-####ooooo#.#xx##
-##...{}n....xx##
-##.....u....xx##
-##t.........xx##
-##b.........xx##
-################
-#############$$$
-( Alternative:
-################
-################
-################
-##xxnn...##...##
-##xxuu...##...##
-####.....##...##
-####ooooo#..#.##
-####ooooo.#.xx##
-####ooooo#.#xx##
-##...{}nn...xx##
-##.....uu...xx##
-##t.........xx##
-##b.........xx##
-################
-############$$$$
-)
-
-
-section 2-? Inject
-level 2-? Inject
-message 2-? Inject
+section 2-8 Far Reach
+level 2-8 Far Reach
+message 2-8 Far Reach
 ################
 ################
 ################
@@ -1410,7 +1433,7 @@ message 2-? Inject
 ###t.....##×××##
 ###b.....#######
 ################
-#############$$$
+%############$$$
 ( Alternative:
 ################
 ################
@@ -1431,10 +1454,116 @@ message 2-? Inject
 #############$$$
 )
 
+section 3-1 Grill
+level 3-1 Grill
+message 3-1 Grill
+##############
+##############
+##############
+###xx##++{>x##
+##.{}.#.....##
+##.........t##
+##....#....b##
+##############
+%###########$$
+
+section 3-2 Inject
+level 3-2 Inject
+message 3-2 Inject
+#########
+#########
+#########
+###+++###
+##++*++##
+##++*++##
+##+++++##
+##.+o+.##
+##.....##
+##...n.##
+##.{}u.##
+##t....##
+##b....##
+#########
+%#######$
+
+section 3-3 Corner
+level 3-3 Corner
+message 3-3 Corner
+############
+############
+############
+#######xxx##
+#######xxx##
+#######___##
+#######___##
+##....____##
+##....____##
+##..nn/___##
+##..uu.___##
+##..{}....##
+##+.....t.##
+##+.....b.##
+############
+%##########$
+
+section 3-4 Odd Goal
+level 3-4 Odd Goal
+message 3-4 Odd Goal
+############
+############
+############
+####♯♯♯♯####
+####♯♯♯♯####
+####♯♯♯♯####
+##..♯××♯..##
+##..♯♯♯♯..##
+##..♯♯♯♯..##
+##..♯♯♯♯..##
+##..{}{}..##
+##...{}...##
+##.t......##
+##.b......##
+############
+%##########$
+
+section 3-5 Cross Fire
+level 3-5 Cross Fire
+message 3-5 Cross Fire
+##################
+##################
+##################
+###....####xxxx###
+##......++.....x##
+##...n..++..{}.x##
+##t..u..++.....x##
+##b.....++.....x##
+##################
+%###############$$
+
+section 3-6 Bottleneck
+level 3-6 Bottleneck
+message 3-6 Bottleneck
+################
+################
+################
+##__############
+##_____#########
+##_____×××..####
+##..._____.++###
+##{}...___.++t##
+##..#####....b##
+##...####.n...##
+##.....##.u..###
+#####x###....###
+#####x.......###
+#####x......####
+################
+%#############$$
+
 (
-section 2-6 Literally Bowling Alley
-level 2-6 Literally Bowling Alley
-message 2-6 Literally Bowling Alley
+section 4-? Literally Bowling Alley
+level 4-? Literally Bowling Alley
+message 4-? Literally Bowling Alley
 ############
 ############
 ############
@@ -1452,6 +1581,4 @@ message 2-6 Literally Bowling Alley
 ##########$$
 )
 
-
-
-
+message Wow, you completed the game!
