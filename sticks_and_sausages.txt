@@ -1102,7 +1102,7 @@ subroutine remove_force_from_old_moving_direction
   ( Remove outgoing "insert" force )
   pushable_type floor [_old_moving_direction:pushable_type:floor:> pushable:opposite_pushable_type:is_tip_or_packed:directions:floor _force:insert:>:opposite_pushable_type:floor:is_countered _insert_force_source:pushable_type:floor] -> [_old_moving_direction:pushable_type:floor:> pushable:opposite_pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:opposite_pushable_type:floor] gosub calculate_moving_direction
   ( Remove all simple/slip force from facing tile in old moving direction )
-  pushable_type_2 floor [_old_moving_direction:pushable_type:floor:> | pushable:pushable_type_2:is_tip_or_packed:directions:floor _force:force_type_simple_or_slip:directions:pushable_type_2:floor:is_countered no _old_moving_direction:pushable_type_2:floor:>] -> [_old_moving_direction:pushable_type:floor:> | stationary pushable:pushable_type_2:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type_2:floor] gosub calculate_moving_direction
+  pushable_type_2 floor [_old_moving_direction:pushable_type:floor:> | pushable:pushable_type_2:is_tip_or_packed:directions:floor _force:force_type_simple_or_slip:directions:pushable_type_2:floor:is_countered no _old_moving_direction:pushable_type_2:floor:>] -> [_old_moving_direction:pushable_type:floor:> | pushable:pushable_type_2:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type_2:floor] gosub calculate_moving_direction
   [_old_moving_direction:pushable_type:floor:directions] -> []
 
 =======     
