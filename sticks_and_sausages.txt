@@ -4,7 +4,7 @@ author Lala_yqz
 sprite_size 10x10
 background_color #211209
 text_color #e3c4d7
-key_repeat_interval 0.2 // [BUG] Document says the default is 0.15 but it's actually 0.2.
+key_repeat_interval 0.18
 again_interval 0.15
 level_select
 level_select_solve_symbol ✓
@@ -157,29 +157,29 @@ grey
 translate: up:10
 
 fixed:grill:floor_0
-#252525 orange red black #66391E
-2200220011
-2200220011
-0000000000
-0000000000
-1100220022
-1100220022
-0000000000
-0000000000
-1100110022
-1100110022
-3333333333
-3333333333
-4444444444
-4444444444
-4444444444
+red #61131a orange #8c511d #5E5E5E black #7A7A7A #66391E // V in HSV is reduced by 37 for the side color
+0022002200
+6444444446
+6444444446
+5555555555
+2200220022
+2200220022
+6444444446
+6444444446
+5555555555
+0022002200
+1133113311
+7777777777
+7777777777
+7777777777
+7777777777
 
 fixed:grill:floor_1
-#252525 orange red black #66391E
+red #61131a orange #8c511d #5E5E5E black #7A7A7A #66391E
 copy: fixed:grill:floor_0 translate: up:5
 
 fixed:grill:floor_2
-#252525 orange red black #66391E
+red #61131a orange #8c511d #5E5E5E black #7A7A7A #66391E
 copy: fixed:grill:floor_1 translate: up:5
 
 pushable:pushable_type:is_tip_or_packed:directions:floor
@@ -257,6 +257,7 @@ pushable:sausage:not_tip_or_packed:up:floor_0
 #e06f8b #cc6680 #994d60
 ..........
 ..........
+..........
 ...1000...
 .11000000.
 1100000001
@@ -264,9 +265,8 @@ pushable:sausage:not_tip_or_packed:up:floor_0
 1100000001
 1100000001
 1100000001
-1100000001
-1100000001
-1100000001
+2222222222
+2222222222
 2222222222
 2222222222
 2222222222
@@ -337,6 +337,7 @@ copy: pushable:sausage:not_tip_or_packed:directions:floor_1 translate: up:5
 pushable:sausage:tip_or_packed:up:floor_0
 #f10914 #db141e #ab0f17 #787878
 ..........
+..........
 ....33....
 ...1000...
 .11000000.
@@ -345,9 +346,8 @@ pushable:sausage:tip_or_packed:up:floor_0
 1100000001
 1100000001
 1100000001
-1100000001
-1100000001
-1100000001
+2222222222
+2222222222
 2222222222
 2222222222
 2222222222
@@ -453,16 +453,16 @@ scoreboard_empty
 #211209
 ..........
 ..........
-...000....
-..00000...
-.0000000..
-.0000000..
-.0000000..
-.0000000..
-.0000000..
-.0000000..
-..00000...
-...000....
+....00....
+...0000...
+..000000..
+..000000..
+..000000..
+..000000..
+..000000..
+..000000..
+...0000...
+....00....
 ..........
 ..........
 ..........
@@ -471,16 +471,16 @@ scoreboard_filled
 #f10914 #787878
 ..........
 ..........
-...111....
-..00000...
-.0000000..
-.0000000..
-.0000000..
-.0000000..
-.0000000..
-.0000000..
-..00000...
-...111....
+....11....
+...0000...
+..000000..
+..000000..
+..000000..
+..000000..
+..000000..
+..000000..
+...0000...
+....11....
 ..........
 ..........
 ..........
@@ -779,17 +779,252 @@ transparent #211209
 000000000000000000000000000000000000000000000000000000000000011100000000000000000000000000000000111100
 translate: right:3 translate: up:2
 
+_title_afterlife
+transparent #211209
+111100000000111000000000011100000110001000000000000000011000001000000110000000
+000010000000001000000000100010001000001000000000000000001000000000001000000000
+000010000000001000000000100010111110111110011100011110001000011000111110011100
+011100000000001000000000100010001000001000100010100000001000001000001000100010
+100000011100001000000000111110001000001000111110100000001000001000001000111110
+100000000000001000000000100010001000001000100000100000001000001000001000100000
+111110000000111110000000100010001000000110011100100000011100011100001000011100
+000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_crossroad
+transparent #211209
+111100000000111100000000011110000000000000000000000000000000000000000000000010
+000010000000000010000000100000000000000000000000000000000000000000000000000010
+000010000000000010000000100000011110011100011110011110011110011100011110011110
+011100000000011100000000100000100000100010100000100000100000100010100010100010
+100000011100100000000000100000100000100010011100011100100000100010100010100010
+100000000000100000000000100000100000100010000010000010100000100010100010100010
+111110000000111110000000011110100000011100111100111100100000011100011110011110
+000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_production_line
+transparent #211209
+111100000000111100000000111100000000000000000010000000000000001000001000000000000000000000100000001000000000000000
+000010000000000010000000100010000000000000000010000000000000001000000000000000000000000000100000000000000000000000
+000010000000001100000000100010011110011100011110100010011110111110011000011100011100000000100000011000011100011100
+011100000000000010000000100010100000100010100010100010100000001000001000100010100010000000100000001000100010100010
+100000011100000010000000111100100000100010100010100010100000001000001000100010100010000000100000001000100010111110
+100000000000000010000000100000100000100010100010100010100000001000001000100010100010000000100000001000100010100000
+111110000000111100000000100000100000011100011110011110011110000110011100011100100010000000111110011100100010011100
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_where
+transparent #211209
+111100000000100000000000101010100000000000000000000000011100
+000010000000100000000000101010100000000000000000000000100010
+000010000000100000000000101010111100011100011110011100000010
+011100000000100100000000101010100010100010100000100010000010
+100000011100111110000000101010100010111110100000111110001100
+100000000000000100000000101010100010100000100000100000000000
+111110000000000100000000010100100010011100100000011100001000
+000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_hiking_basics
+transparent #211209
+111100000000111110000000100010001000100000001000000000000000000000111100000000000000001000000000000000
+000010000000100000000000100010000000100000000000000000000000000000100010000000000000000000000000000000
+000010000000111100000000111110011000100010011000011100011110000000111100011110011110011000011110011110
+011100000000000010000000100010001000100100001000100010100010000000100010100010100000001000100000100000
+100000011100000010000000100010001000111000001000100010100010000000100010100010011100001000100000011100
+100000000000000010000000100010001000100100001000100010100010000000100010100010000010001000100000000010
+111110000000111100000000100010011100100010011100100010011110000000111100011110111100011100011110111100
+000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000011100000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_team_building
+transparent #211209
+111100000000011100000000111110000000000000000000000000111100000000001000011000000010001000000000000000
+000010000000100000000000001000000000000000000000000000100010000000000000001000000010000000000000000000
+000010000000111100000000001000011100011110010100000000111100100010011000001000011110011000011100011110
+011100000000100010000000001000100010100010101010000000100010100010001000001000100010001000100010100010
+100000011100100010000000001000111110100010101010000000100010100010001000001000100010001000100010100010
+100000000000100010000000001000100000100010101010000000100010100010001000001000100010001000100010100010
+111110000000011100000000001000011100011110101010000000111100011110011100011100011110011100100010011110
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011100
+translate: right:3 translate: up:2
+
+_title_sharing
+transparent #211209
+111100000000111110000000011110100000000000000000001000000000000000
+000010000000000010000000100000100000000000000000000000000000000000
+000010000000000100000000011100111100011110011110011000011100011110
+011100000000001000000000000010100010100010100000001000100010100010
+100000011100001000000000000010100010100010100000001000100010100010
+100000000000001000000000000010100010100010100000001000100010100010
+111110000000001000000000111100100010011110100000011100100010011110
+000000000000000000000000000000000000000000000000000000000000000010
+000000000000000000000000000000000000000000000000000000000000011100
+translate: right:3 translate: up:2
+
+_title_well_where
+transparent #211209
+111100000000011100000000101010000000011000011000000000000000101010100000000000000000000000011100
+000010000000100010000000101010000000001000001000000000000000101010100000000000000000000000100010
+000010000000011100000000101010011100001000001000000000000000101010111100011100011110011100000010
+011100000000100010000000101010100010001000001000000000000000101010100010100010100000100010000010
+100000011100100010000000101010111110001000001000000000000000101010100010111110100000111110001100
+100000000000100010000000101010100000001000001000001000000000101010100010100000100000100000000000
+111110000000011100000000010100011100011100011100011000000000010100100010011100100000011100001000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_far_reach
+transparent #211209
+111100000000011100000000111110000000000000000000111100000000000000000000100000
+000010000000100010000000100000000000000000000000100010000000000000000000100000
+000010000000100010000000111110011110011110000000100010011100011110011110111100
+011100000000100010000000100000100010100000000000111100100010100010100000100010
+100000011100011110000000100000100010100000000000100010111110100010100000100010
+100000000000000010000000100000100010100000000000100010100000100010100000100010
+111110000000011100000000100000011110100000000000100010011100011110011110100010
+000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_grill
+transparent #211209
+111100000000111000000000011110000000001000011000011000
+000010000000001000000000100000000000000000001000001000
+001100000000001000000000100000011110011000001000001000
+000010000000001000000000100000100000001000001000001000
+000010011100001000000000100110100000001000001000001000
+000010000000001000000000100010100000001000001000001000
+111100000000111110000000011110100000011100011100011100
+000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_inject
+transparent #211209
+111100000000111100000000111110000000001000000000000000001000
+000010000000000010000000001000000000000000000000000000001000
+001100000000000010000000001000011100011000011100011110111110
+000010000000011100000000001000100010001000100010100000001000
+000010011100100000000000001000100010001000111110100000001000
+000010000000100000000000001000100010001000100000100000001000
+111100000000111110000000111110100010001000011100011110000110
+000000000000000000000000000000000000101000000000000000000000
+000000000000000000000000000000000000010000000000000000000000
+translate: right:3 translate: up:2
+
+_title_placeholder
+transparent #211209
+111100000000111100000000111100011000000000000000000000100000000000011000000010000000000000
+000010000000000010000000100010001000000000000000000000100000000000001000000010000000000000
+001100000000001100000000100010001000011110011110011100111100011100001000011110011100011110
+000010000000000010000000100010001000100010100000100010100010100010001000100010100010100000
+000010011100000010000000111100001000100010100000111110100010100010001000100010111110100000
+000010000000000010000000100000001000100010100000100000100010100010001000100010100000100000
+111100000000111100000000100000011100011110011110011100100010011100011100011110011100100000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_corner
+transparent #211209
+111100000000100000000000011110000000000000000000000000000000
+000010000000100000000000100000000000000000000000000000000000
+001100000000100000000000100000011100011110011100011100011110
+000010000000100100000000100000100010100000100010100010100000
+000010011100111110000000100000100010100000100010111110100000
+000010000000000100000000100000100010100000100010100000100000
+111100000000000100000000011110011100100000100010011100100000
+000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_trojan
+transparent #211209
+111100000000111110000000111110000000000000001000000000000000
+000010000000100000000000001000000000000000000000000000000000
+001100000000111100000000001000011110011100011000011110011100
+000010000000000010000000001000100000100010001000100010100010
+000010011100000010000000001000100000100010001000100010100010
+000010000000000010000000001000100000100010001000100010100010
+111100000000111100000000001000100000011100001000011110100010
+000000000000000000000000000000000000000000101000000000000000
+000000000000000000000000000000000000000000010000000000000000
+translate: right:3 translate: up:2
+
+_title_ditches
+transparent #211209
+111100000000011100000000111100001000001000000000100000000000000000
+000010000000100000000000100010000000001000000000100000000000000000
+001100000000111100000000100010011000111110011110111100011100011110
+000010000000100010000000100010001000001000100000100010100010100000
+000010011100100010000000100010001000001000100000100010111110011100
+000010000000100010000000100010001000001000100000100010100000000010
+111100000000011100000000111100011100000110011110100010011100111100
+000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_odd_goal
+transparent #211209
+111100000000111110000000011100000010000010000000011110000000000000011000
+000010000000000010000000100010000010000010000000100000000000000000001000
+001100000000000100000000100010011110011110000000100000011100011110001000
+000010000000001000000000100010100010100010000000100000100010100010001000
+000010011100001000000000100010100010100010000000100110100010100010001000
+000010000000001000000000100010100010100010000000100010100010100010001000
+111100000000001000000000011100011110011110000000011110011100011110011100
+000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_bottleneck
+transparent #211209
+111100000000011100000000111100000000001000001000011000000000000000000000000000100000
+000010000000100010000000100010000000001000001000001000000000000000000000000000100000
+001100000000011100000000111100011100111110111110001000011100011100011100011110100010
+000010000000100010000000100010100010001000001000001000100010100010100010100000100100
+000010011100100010000000100010100010001000001000001000111110100010111110100000111000
+000010000000100010000000100010100010001000001000001000100000100010100000100000100100
+111100000000011100000000111100011100000110000110011100011100100010011100011110100010
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
+_title_sound_test
+transparent #211209
+111100000000011100000000011110000000000000000000000010000000111110000000000000001000
+000010000000100010000000100000000000000000000000000010000000001000000000000000001000
+001100000000100010000000011100011100100010011100011110000000001000011100011110111110
+000010000000100010000000000010100010100010100010100010000000001000100010100000001000
+000010011100011110000000000010100010100010100010100010000000001000111110011100001000
+000010000000000010000000000010100010100010100010100010000000001000100000000010001000
+111100000000011100000000111100011100011110100010011110000000001000011100111100000110
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+translate: right:3 translate: up:2
+
 =======
 LEGEND
 =======
 
 thing = pushable:pushable_type:is_tip_or_packed:directions:floor or fixed:fixed_type:floor
-_titles = _title_its_oily or _title_no_escape or _title_get_it_off or _title_flip_flop or _title_drawbridge or _title_out_of_order or _title_odd_gap or _title_claw_hammer or _title_bowling_alley 
+_titles = _title_its_oily or _title_no_escape or _title_get_it_off or _title_flip_flop or _title_drawbridge or _title_out_of_order or _title_odd_gap or _title_claw_hammer or _title_bowling_alley or _title_afterlife or _title_crossroad or _title_production_line or _title_where or _title_hiking_basics or _title_team_building or _title_sharing or _title_well_where or _title_far_reach or _title_grill or _title_inject or _title_placeholder or _title_corner or _title_trojan or _title_ditches or _title_odd_goal or _title_bottleneck or _title_sound_test
 
 O = background
 _ = fixed:ground:floor_0
 . = fixed:ground:floor_0 and fixed:ground:floor_1
 / = fixed:ground:floor_0 and fixed:ground:floor_1 and fixed:ground:floor_2
+- = fixed:ground:floor_0 and fixed:ground:floor_2 and _floor_2_wall_cover
 # = / and _floor_2_wall_cover
 $ = # and scoreboard_empty
 + = fixed:ground:floor_0 and fixed:grill:floor_1
@@ -817,8 +1052,12 @@ v = _ and pushable:sausage:not_tip_or_packed:down:floor_1
 > = x and pushable:sausage:not_tip_or_packed:right:floor_2
 ∩ = × and pushable:sausage:not_tip_or_packed:up:floor_1  ( Lower floor & on target )
 ս = × and pushable:sausage:not_tip_or_packed:down:floor_1
+├ = × and pushable:sausage:not_tip_or_packed:left:floor_1
+┤ = × and pushable:sausage:not_tip_or_packed:right:floor_1
 « = pushable:sausage:tip_or_packed:left:floor_2  ( Floating, packed )
 » = pushable:sausage:tip_or_packed:right:floor_2
+[ = + and pushable:sausage:not_tip_or_packed:left:floor_2  ( On grill )
+] = + and pushable:sausage:not_tip_or_packed:right:floor_2
 ſ = _ and pushable:stick:tip_or_packed:up:floor_1  ( Lower floor )
 Ɩ = _ and pushable:stick:not_tip_or_packed:down:floor_1
 ← = < and pushable:stick:tip_or_packed:up:floor_2  ( Stick tip inside Sausage )
@@ -828,6 +1067,10 @@ v = _ and pushable:sausage:not_tip_or_packed:down:floor_1
 
 α = _ and pushable:sausage:not_tip_or_packed:up:floor_2
 β = pushable:sausage:not_tip_or_packed:left:floor_1 and pushable:sausage:tip_or_packed:right:floor_2
+γ = - and pushable:sausage:not_tip_or_packed:up:floor_1
+δ = - and pushable:sausage:not_tip_or_packed:right:floor_1
+ε = - and pushable:sausage:not_tip_or_packed:down:floor_1
+ζ = - and pushable:sausage:not_tip_or_packed:left:floor_1
 
 % = # and _init and _temp_variable_holder
 
@@ -840,26 +1083,52 @@ v = _ and pushable:sausage:not_tip_or_packed:down:floor_1
 ⑦ = % and _title_odd_gap
 ⑧ = % and _title_claw_hammer
 ⑨ = % and _title_bowling_alley
+⑩ = % and _title_afterlife
+⑪ = % and _title_crossroad
+⑫ = % and _title_production_line
+⑬ = % and _title_where
+⑭ = % and _title_hiking_basics
+⑮ = % and _title_team_building
+⑯ = % and _title_sharing
+⑰ = % and _title_well_where
+⑱ = % and _title_far_reach
+❶ = % and _title_grill
+❷ = % and _title_inject
+❸ = % and _title_placeholder
+❹ = % and _title_corner
+❺ = % and _title_trojan
+❻ = % and _title_ditches
+❼ = % and _title_odd_goal
+❽ = % and _title_bottleneck
+❾ = % and _title_sound_test
 
 ================
 COLLISIONLAYERS
 ================
 
 background
-floor -> fixed:fixed_type:floor
-_floor_2_wall_cover
-goal:floor
-directions floor -> goal_border:directions:floor
 
 pushable:stick:is_tip_or_packed:directions:floor_0
 pushable:sausage:is_tip_or_packed:directions:floor_0
 _stick_bottom:floor_0
+fixed:fixed_type:floor_0
+goal:floor_0
+directions -> goal_border:directions:floor_0
+
 pushable:stick:is_tip_or_packed:directions:floor_1
 pushable:sausage:is_tip_or_packed:directions:floor_1
 _stick_bottom:floor_1
+fixed:fixed_type:floor_1
+goal:floor_1
+directions -> goal_border:directions:floor_1
+
 pushable:stick:is_tip_or_packed:directions:floor_2
 pushable:sausage:is_tip_or_packed:directions:floor_2
 _stick_bottom:floor_2
+fixed:fixed_type:floor_2
+goal:floor_2
+directions -> goal_border:directions:floor_2
+_floor_2_wall_cover
 
 force_type directions pushable_type floor -> _force:force_type:directions:pushable_type:floor:is_countered
 force_type pushable_type floor -> _temp_force_direction:force_type:directions:pushable_type:floor
@@ -960,7 +1229,7 @@ startloop
   
   ( - Insert push )
   // Don't give outgoing force when there is an incoming force between the two?no insert_force_source:pushable_type
-  // Calculate moving direction right now, not waiting for other tiles that need calculations and calculate them together. This is because when spreading, 2 tiles wont't spread into each other because they are both spread sources.
+  // Calculate moving direction right now, not waiting for other tiles that need calculations and calculating them together. This is because otherwise, when spreading, it's possible that 2 tiles wont't spread into each other because they are both spread sources. e.g. pushing up 4 sausages positioned like a roman number II.
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor pushable:opposite_pushable_type:is_tip_or_packed:directions:floor no _force:insert:>:opposite_pushable_type:floor:is_countered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor pushable:opposite_pushable_type:is_tip_or_packed:directions:floor _force:insert:>:opposite_pushable_type:floor:uncountered _insert_force_source:pushable_type:floor _calculate_moving_direction:opposite_pushable_type:floor] gosub calculate_moving_direction
   // [TODO?] If the object you are pushing is moving in the same direction driven by an insert force, then it should not be pushed (because you can't touch it!). This is implemented by adding "no force:insert:>:sausage:uncountered" in the following rules, which is only a makeshift, and only works when there are no multiple objects & no strangely-shaped objects.
   ( - Push unpacked opposing sausage )
@@ -971,16 +1240,16 @@ startloop
     // If you remove "is_tip_or_packed" from rule prefix, then the total instruction count is lower. This is because in the compiled instructions, something like "pushable:...:is_tip_or_packed:..." can be used.
     // If you remove the "no ..." from the rule, then the total instruction count is higher, because when "no ..." is used, contradictory rules like "X no X" won't get compiled.
   pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:^:floor no _force:simple:>:sausage:floor:is_countered no _force:slip:v:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:simple:>:sausage:floor:uncountered _force:slip:v:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
-    ( [Rotation A] [Simple] )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:^:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
     ( [Rotation A] [Slip] )
   pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:^:floor no _force:slip:v:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:slip:v:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+    ( [Rotation A] [Simple] )
+  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:^:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:^:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
     ( [Rotation B] [Simple + Slip] )
   pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:v:floor no _force:simple:>:sausage:floor:is_countered no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:simple:>:sausage:floor:uncountered _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
-    ( [Rotation B] [Simple] )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:v:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
     ( [Rotation B] [Slip] )
   pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:v:floor no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+    ( [Rotation B] [Simple] )
+  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:v:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:not_tip_or_packed:v:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
   ( - Push packed sausage )
   floor [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:tip_or_packed:directions:floor no _force:simple:>:sausage:floor:is_countered] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor | pushable:sausage:tip_or_packed:directions:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
 
@@ -1350,21 +1619,21 @@ message 1-9 Bowling Alley
 section 2-1 Afterlife
 level 2-1 Afterlife
 message 2-1 Afterlife
-#########
-#########
-#########
-##..n.x##
-##..u.x##
-##.######
-##xx.####
-##...####
-##...####
-##{}#####
-##..#####
-##.t#####
-##.b#####
-#########
-%######$$
+###########
+###########
+###########
+###..n.x###
+###..u.x###
+###.#######
+###xx.#####
+###...#####
+###...#####
+###{}######
+###..######
+###.t######
+###.b######
+###########
+⑩########$$
 
 section 2-2 Crossroad
 level 2-2 Crossroad
@@ -1382,29 +1651,31 @@ message 2-2 Crossroad
 #####....##
 #####....##
 ###########
-%########$$
+⑪########$$
 
-section 2-3 Assembly Line
-level 2-3 Assembly Line
-message 2-3 Assembly Line
-#########
-#########
-#########
-###oooo##
-###oooo##
-###oooo##
-###..xx##
-###....##
-###..{}##
-###..{}##
-###....##
-##....###
-##..t.###
-##..b.###
-##....###
-#########
-%######$$
-
+section 2-3 Production Line
+level 2-3 Production Line
+message If you feel stuck, you can press ESC, then select "go to level select screen" to play another level.
+message Completing a level unlocks a new one.
+message 2-3 Production Line
+###############
+###############
+###############
+######oooo#####
+######oooo#####
+######oooo#####
+######..xx#####
+######....#####
+######..{}#####
+######..{}#####
+######....#####
+#####....######
+#####..t.######
+#####..b.######
+#####....######
+###############
+⑫############$$
+(
 section 2-3 Assembly Line?
 level 2-3 Assembly Line?
 message 2-3 Assembly Line?
@@ -1427,6 +1698,7 @@ message 2-3 Assembly Line?
 ###...##
 ########
 %####$$$
+)
 
 section 2-4 Where?
 level 2-4 Where?
@@ -1449,7 +1721,7 @@ message 2-4 Where?
 ###t...######
 ###b...######
 #############
-%##########$$
+⑬##########$$
 
 
 section 2-5 Hiking Basics
@@ -1469,7 +1741,7 @@ message 2-5 Hiking Basics
 ##t.........xx##
 ##b.........xx##
 ################
-%############$$$
+⑭############$$$
 ( Alternative: no!! 4-length vertical. fixed?
 ################
 ################
@@ -1489,29 +1761,29 @@ message 2-5 Hiking Basics
 )
 
 // I made it so that players can build the bridge anywhere and complete the level, because I don't want it to be another "find the right spot" puzzle. That would be boring.
-section 2-6 Like an Engineer
-level 2-6 Like an Engineer
-message 2-6 Like an Engineer
-##########
-##########
-##########
-###xxxx###
-###xxxx###
-###xxxx###
-###xxxx###
-##......##
-##n...{}##
-##u.t...##
-##..b.__##
-##..____##
-##._____##
-##______##
-##_____.##
-##___...##
-##__....##
-##_..{>x##
-##########
-%######$$$
+section 2-6 Team Building
+level 2-6 Team Building
+message 2-6 Team Building
+##############
+##############
+##############
+#####xxxx#####
+#####xxxx#####
+#####xxxx#####
+#####xxxx#####
+####n.....####
+####u...{}####
+####t.....####
+####b...__####
+####..____####
+####._____####
+####______####
+####_____.####
+####___...####
+####__....####
+####_..{>x####
+##############
+⑮##########$$$
 
 
 section 2-7 Sharing
@@ -1528,7 +1800,7 @@ message 2-7 Sharing
 ##t........##
 ##b........##
 #############
-%##########$$
+⑯##########$$
 ( Alternate:
 section 2-? !?-2
 level 2-? !?-2
@@ -1560,7 +1832,7 @@ message 2-8 Well, Where?
 #####oo___###
 ##xxxooo_..##
 ##xxxoo....##
-##xxx..{}..##
+##xxx...{}.##
 ##xxx......##
 ####......###
 ####..#######
@@ -1568,7 +1840,7 @@ message 2-8 Well, Where?
 ###t...######
 ###b...######
 #############
-%##########$$
+⑰##########$$
 
 section 2-9 Far Reach
 level 2-9 Far Reach
@@ -1589,7 +1861,7 @@ message 2-9 Far Reach
 ###t.....##×××##
 ###b.....#######
 ################
-%############$$$
+⑱############$$$
 ( Alternative:
 ################
 ################
@@ -1616,12 +1888,12 @@ message 3-1 Grill
 ##############
 ##############
 ##############
-###xx##++{>x##
+###xx##+[}xx##
 ##.{}.#.....##
 ##.........t##
 ##....#....b##
 ##############
-%###########$$
+❶###########$$
 
 section 3-2 Inject
 level 3-2 Inject
@@ -1633,74 +1905,34 @@ message 3-2 Inject
 ##++*++##
 ##++*++##
 ##+++++##
-##.+o+.##
+##..+..##
 ##.....##
 ##...n.##
 ##.{}u.##
 ##t....##
 ##b....##
 #########
-%#######$
+❷#######$
 
-section 3-3 Odd Goal
-level 3-3 Odd Goal
-message 3-3 Odd Goal
+section 3-3 Placeholder
+level 3-3 Placeholder
+message 3-3 Placeholder
 ############
 ############
 ############
-####♯♯♯♯####
-####♯♯♯♯####
-####♯♯♯♯####
-####♯±±♯####
-####♯♯♯♯####
-##..♯♯♯♯..##
-##..♯♯♯♯..##
-##..{}{}..##
-##...{}...##
-##.t......##
-##.b......##
+###______###
+###___oo_###
+###_∩×«β›###
+###_v____###
+###______###
+###_ſ____###
+###_ɩ____###
 ############
-%##########$
+❸#########$$
 
-section 3-4 Placeholder
-level 3-4 Placeholder
-message 3-4 Placeholder
-##########
-##########
-##########
-##______##
-##___oo_##
-##_∩×«β›##
-##_v____##
-##______##
-##_ſ____##
-##_ɩ____##
-##########
-%#######$$
-
-section 3-5 Ditches
-level 3-5 Ditches
-message 3-5 Ditches
-#############
-#############
-##.........##
-##.........##
-##....._...##
-##..._._...##
-##.______..##
-##...×._...##
-##..×××o__.##
-##...×._...##
-##..._.....##
-##.t.......##
-##.b.......##
-##.........##
-#############
-%############
-
-section 3-6 Corner
-level 3-6 Corner
-message 3-6 Corner
+section 3-4 Corner
+level 3-4 Corner
+message 3-4 Corner
 ############
 ############
 ############
@@ -1710,13 +1942,71 @@ message 3-6 Corner
 ##...##___##
 ##....____##
 ##....____##
-##..nn/___##
+##..nn#___##
 ##..uu.___##
 ##..{}....##
 ##+.....t.##
 ##+.....b.##
 ############
-%##########$
+❹##########$
+
+section 3-5 Trojan
+level 3-5 Trojan
+message 3-5 Trojan
+##########
+##########
+##########
+####.#####
+####..#####
+####{}####
+####xx####
+###....###
+###....###
+###.##.###
+###....###
+###_.._###
+###____###
+##._.._.##
+##+.nn.+##
+##.tuu..##
+##.b....##
+##########
+❺########$
+(section 3-5 Cross Fire
+level 3-5 Cross Fire
+message 3-5 Cross Fire
+################
+################
+################
+###....##××××###
+##.....+_____×##
+##...n.+__‹›_×##
+##t..u.+_____×##
+##b....+_____×##
+################
+%#############$$)
+
+section 3-6 Ditches
+level 3-6 Ditches
+message 3-6 Ditches
+####################
+####################
+####################
+######...........###
+######...._......###
+#####.♯..._.......##
+##××__‹›‹›_____...##
+##..#._..._._._...##
+#####.^________...##
+####__v..._._.....##
+####_._..××___.{}.##
+####______._._.{}.##
+#####......___....##
+#####...nn.....t..##
+######..uu.....b.###
+######...........###
+####################
+❻#################$$
 
 section 3-7 Odd Goal
 level 3-7 Odd Goal
@@ -1736,41 +2026,66 @@ message 3-7 Odd Goal
 ##.t......##
 ##.b......##
 ############
-%##########$
+❼##########$
 
-section 3-8 Cross Fire
-level 3-8 Cross Fire
-message 3-8 Cross Fire
-##################
-##################
-##################
-###....####xxxx###
-##......++.....x##
-##...n..++..{}.x##
-##t..u..++.....x##
-##b.....++.....x##
-##################
-%###############$$
-
-section 3-9 Bottleneck
-level 3-9 Bottleneck
-message 3-9 Bottleneck
+section 3-8 Bottleneck
+level 3-8 Bottleneck
+message 3-8 Bottleneck
+// Why not remove the top target of the 3 bottom-left targets, making the solution more obscure?
+// Because if so, then the stick has to go out of the horizontal sausage in order to pack the vertical sausage, but going out of the horizontal sausage is part of the solution.
 ################
 ################
 ################
-##__############
-##_____#########
-##_____×××..####
+##_____×××######
+##________..####
 ##..._____.++###
 ##{}...___.++t##
 ##..#####....b##
-##...####.n...##
+##.....##.n...##
 ##.....##.u..###
 #####x###....###
 #####x.......###
 #####x......####
 ################
-%#############$$
+❽#############$$
+( Not working, because the vertical sausage can enter the left area.
+################
+################
+##__############
+##_____#########
+##_____×××.#####
+##..._____..####
+##{}...___..####
+##..#####....###
+##...####...t###
+##....###.n.b###
+##.....##.u..###
+#####x###....###
+#####x......####
+#####x......####
+################
+##############$$
+)
+
+section 3-9 Sound Test
+level 3-9 Sound Test
+message 3-9 Sound Test
+##################
+##################
+##################
+##oo#-------_××o##
+##oo#γ---γ-#oooo##
+##oo#ε---ε-#oooo##
+##oo#--ζδ--#oooo##
+##oo###--###oooo##
+##ooooo__ooooooo##
+##ooooo__ooooooo##
+##ooooo__ooooooo##
+#######__#########
+#######__.....t###
+#######♯♯.....b###
+##################
+❾################$
 
 (
 section 4-? Literally Bowling Alley
