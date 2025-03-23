@@ -1399,7 +1399,7 @@ late [_already_counted] -> []
   late [_update_scoreboard] -> []
     
 
-( Add temp sprites )
+( Add stick bottom sprite when inside sausage )
 late floor [pushable:stick:tip_or_packed:up:floor] -> [pushable:stick:tip_or_packed:up:floor _stick_bottom:floor]
 late floor [pushable:stick:not_tip_or_packed:down:floor] -> [pushable:stick:not_tip_or_packed:down:floor _stick_bottom:floor]
 
@@ -1442,7 +1442,7 @@ subroutine spread
     ( Spread not moving )
     pushable_type floor [stationary pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor no _spread:pushable_type:floor] -> [stationary pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | stationary pushable:pushable_type:is_tip_or_packed:>:floor _spread_next:pushable_type:floor]
     ( Spread force )
-    // [BUG?] switching the last two objects breaks the rule, when there is a tag as a rule prefix
+    // [BUG]? switching the last two objects breaks the rule, when there is a tag as a rule prefix
     force_type directions pushable_type is_countered floor  [_force:force_type:directions:pushable_type:floor:is_countered pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor no _spread:pushable_type:floor] -> [_force:force_type:directions:pushable_type:floor:is_countered pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor _force:force_type:directions:pushable_type:floor:is_countered _spread_next:pushable_type:floor]
     ( Spread no force )
     force_type directions pushable_type is_countered floor [pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor no _force:force_type:directions:pushable_type:floor:is_countered | pushable:pushable_type:is_tip_or_packed:>:floor no _spread:pushable_type:floor] -> [pushable:pushable_type:is_tip_or_packed:<:floor _spread:pushable_type:floor | pushable:pushable_type:is_tip_or_packed:>:floor no _force:force_type:directions:pushable_type:floor:is_countered _spread_next:pushable_type:floor]
