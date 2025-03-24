@@ -1207,7 +1207,7 @@ RULES
 [_stick_bottom:floor] -> []
 
 ( Calculate goal borders )
-floor [goal:floor | no goal:floor_x ] -> [goal:floor goal_border:>:floor | ]
+floor [goal:floor | no goal:floor] -> [goal:floor goal_border:>:floor | ]
 ( Calculate floor 1 grass covers )
 [fixed:ground:floor_1 fixed:fixed_type:floor_2] -> [fixed:ground:floor_1 fixed:fixed_type:floor_2 _floor_1_grass_cover] 
 
