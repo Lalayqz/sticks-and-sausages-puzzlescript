@@ -1675,30 +1675,6 @@ message 2-3 Production Line
 #####....######
 ###############
 ⑫############$$
-(
-section 2-3 Assembly Line?
-level 2-3 Assembly Line?
-message 2-3 Assembly Line?
-########
-########
-########
-###ooo##
-###ooo##
-###ooo##
-##xxx###
-##xxx###
-##.{}###
-##.{}###
-##.{}###
-##....##
-##....##
-##.t..##
-##.b..##
-###...##
-###...##
-########
-%####$$$
-)
 
 section 2-4 Where?
 level 2-4 Where?
@@ -1723,7 +1699,6 @@ message 2-4 Where?
 #############
 ⑬##########$$
 
-
 section 2-5 Hiking Basics
 level 2-5 Hiking Basics
 message 2-5 Hiking Basics
@@ -1742,23 +1717,6 @@ message 2-5 Hiking Basics
 ##b.........xx##
 ################
 ⑭############$$$
-( Alternative: no!! 4-length vertical. fixed?
-################
-################
-################
-##xxnn...##...##
-##xxuu...##...##
-####.....##...##
-####ooooo#...###
-####ooooo.#.xx##
-####ooooo#.#xx##
-##...{}nn...xx##
-##.....uu...xx##
-##t.........xx##
-##b.........xx##
-################
-############$$$$
-)
 
 // I made it so that players can build the bridge anywhere and complete the level, because I don't want it to be another "find the right spot" puzzle. That would be boring.
 section 2-6 Team Building
@@ -1785,7 +1743,6 @@ message 2-6 Team Building
 ##############
 ⑮##########$$$
 
-
 section 2-7 Sharing
 level 2-7 Sharing
 message 2-7 Sharing
@@ -1801,23 +1758,6 @@ message 2-7 Sharing
 ##b........##
 #############
 ⑯##########$$
-( Alternate:
-section 2-? !?-2
-level 2-? !?-2
-message 2-? !?-2
-############
-############
-############
-##xxx__xxx##
-###×_____###
-###×_m___###
-##...u....##
-##{}....{}##
-##t.......##
-##b.......##
-############
-%########$$$
-)
 
 section 2-8 Well, Where?
 level 2-8 Well, Where?
@@ -1862,25 +1802,6 @@ message 2-9 Far Reach
 ###b.....#######
 ################
 ⑱############$$$
-( Alternative:
-################
-################
-################
-###.no__..######
-##..uo___.######
-##___o_______###
-##___________###
-###.....______##
-###____...____##
-###_____...___##
-#######....×××##
-###{}.n....×××##
-###...u....×××##
-###t.....##×××##
-###b.....#######
-################
-#############$$$
-)
 
 section 3-1 Grill
 level 3-1 Grill
@@ -1972,9 +1893,7 @@ message 3-5 Trojan
 ##.b....##
 ##########
 ❺########$
-(section 3-5 Cross Fire
-level 3-5 Cross Fire
-message 3-5 Cross Fire
+( Old version:
 ################
 ################
 ################
