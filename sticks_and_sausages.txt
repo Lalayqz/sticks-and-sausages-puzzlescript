@@ -1137,6 +1137,8 @@ player = pushable:stick:is_tip_or_packed:plain:directions:floor
 v = _ and pushable:sausage:not_tip_or_packed:plain:down:floor_1
 < = x and pushable:sausage:not_tip_or_packed:plain:left:floor_2  ( On target )
 > = x and pushable:sausage:not_tip_or_packed:plain:right:floor_2
+▲ = x and pushable:sausage:not_tip_or_packed:plain:up:floor_2
+▼ = x and pushable:sausage:not_tip_or_packed:plain:down:floor_2
 ∩ = × and pushable:sausage:not_tip_or_packed:plain:up:floor_1  ( Lower floor & on target )
 ս = × and pushable:sausage:not_tip_or_packed:plain:down:floor_1
 ├ = × and pushable:sausage:not_tip_or_packed:plain:left:floor_1
@@ -1158,6 +1160,9 @@ v = _ and pushable:sausage:not_tip_or_packed:plain:down:floor_1
 δ = - and pushable:sausage:not_tip_or_packed:plain:right:floor_1
 ε = - and pushable:sausage:not_tip_or_packed:plain:down:floor_1
 ζ = - and pushable:sausage:not_tip_or_packed:plain:left:floor_1
+η = x and pushable:sausage:tip_or_packed:plain:left:floor_2
+θ = x and pushable:sausage:tip_or_packed:plain:right:floor_2
+
 
 % = # and _init and _temp_variable_holder
 
@@ -1623,3 +1628,25 @@ message 4-? Defense Line
 #######x#######
 ###############
 %############$$
+
+section 4-? Hiking
+level 4-? Hiking
+message 4-? Hiking
+###############
+###############
+###############
+###....########
+###....########
+###oooo####oo##
+###oooo....oo##
+###ooo.#.#.oo##
+###ooo.#...oo##
+###ooo.#...oo##
+###oooo..#.oo##
+###oooo#...oo##
+###........####
+###........####
+###############
+###############
+###############
+#############$$
