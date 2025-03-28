@@ -336,6 +336,87 @@ pushable:sausage:not_tip_or_packed:plain:directions:floor_2
 #e06f8b #cc6680 #994d60
 copy: pushable:sausage:not_tip_or_packed:plain:directions:floor_1 translate: up:5
 
+pushable:sausage:not_tip_or_packed:spicy:up:floor_0
+#ec4354 #E03E4D #C12E3A
+..........
+..........
+..........
+...1000...
+.11000000.
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+2222222222
+2222222222
+2222222222
+2222222222
+2222222222
+
+pushable:sausage:not_tip_or_packed:spicy:down:floor_0
+#ec4354 #E03E4D #C12E3A
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+1100000001
+1110000011
+2111111112
+2211111122
+.22222222.
+...2222...
+..........
+..........
+
+pushable:sausage:not_tip_or_packed:spicy:left:floor_0
+#ec4354 #E03E4D #C12E3A
+..........
+..........
+...1000000
+..10000000
+..10000000
+.110000000
+.110000000
+.110000000
+.110000000
+.211000000
+.211111111
+.221111111
+..22222222
+...2222222
+..........
+
+
+pushable:sausage:not_tip_or_packed:spicy:right:floor_0
+#ec4354 #E03E4D #C12E3A
+..........
+..........
+0000000...
+00000000..
+00000000..
+000000000.
+000000000.
+000000000.
+000000000.
+000000001.
+111111111.
+111111112.
+22222222..
+2222222...
+..........
+
+pushable:sausage:not_tip_or_packed:spicy:directions:floor_1
+#ec4354 #E03E4D #C12E3A
+copy: pushable:sausage:not_tip_or_packed:plain:directions:floor_0 translate: up:5
+
+pushable:sausage:not_tip_or_packed:spicy:directions:floor_2
+#ec4354 #E03E4D #C12E3A
+copy: pushable:sausage:not_tip_or_packed:plain:directions:floor_1 translate: up:5
+
 pushable:sausage:tip_or_packed:flavor:up:floor_0
 #f10914 #db141e #ab0f17 #787878
 ..........
@@ -1041,6 +1122,10 @@ n = . and pushable:sausage:not_tip_or_packed:plain:up:floor_2
 u = . and pushable:sausage:not_tip_or_packed:plain:down:floor_2
 { = . and pushable:sausage:not_tip_or_packed:plain:left:floor_2
 } = . and pushable:sausage:not_tip_or_packed:plain:right:floor_2
+8 = . and pushable:sausage:not_tip_or_packed:spicy:up:floor_2
+2 = . and pushable:sausage:not_tip_or_packed:spicy:down:floor_2
+4 = . and pushable:sausage:not_tip_or_packed:spicy:left:floor_2
+6 = . and pushable:sausage:not_tip_or_packed:spicy:right:floor_2
 t = . and pushable:stick:tip_or_packed:plain:up:floor_2
 b = . and pushable:stick:not_tip_or_packed:plain:down:floor_2
 
@@ -1302,12 +1387,16 @@ late [_pierce:pushable_type:floor:directions] -> []
 late [_through_hole:pushable_type:floor:directions:which_space] -> []
 
 
-( Do grill & check if can grill )
+( Do grill/spice & check if can grill/spice )
   ( - Do grill )
   late low_floor [_do_again:grill] [fixed:grill:low_floor pushable:stick:is_tip_or_packed:plain:directions:higher_floor no pushable:sausage:not_tip_or_packed:flavor:directions:higher_floor] -> [_do_again:grill] [fixed:grill:low_floor] sfx7
+  ( - Do spice )
+  late floor [_do_again:grill] [pushable:sausage:not_tip_or_packed:spicy:directions:floor pushable:stick:is_tip_or_packed:plain:directions:floor] -> [_do_again:grill] [pushable:sausage:not_tip_or_packed:spicy:directions:floor] sfx7
   late [_do_again:grill] -> []
   ( - Check if can grill )
   late low_floor [_temp_variable_holder no _do_again:grill] [fixed:grill:low_floor pushable:stick:is_tip_or_packed:plain:directions:higher_floor no pushable:sausage:not_tip_or_packed:flavor:directions:higher_floor] -> [_temp_variable_holder _do_again:grill] [fixed:grill:low_floor pushable:stick:is_tip_or_packed:plain:directions:higher_floor] again
+  ( - Check if can spice )
+  late floor [_temp_variable_holder no _do_again:grill] [pushable:sausage:not_tip_or_packed:spicy:directions:floor pushable:stick:is_tip_or_packed:plain:directions:floor] -> [_temp_variable_holder _do_again:grill] [pushable:sausage:not_tip_or_packed:spicy:directions:floor pushable:stick:is_tip_or_packed:plain:directions:floor] again
 
 
 ( Do fall & check if can fall )
@@ -1476,9 +1565,61 @@ subroutine remove_force_from_old_moving_direction
 LEVELS
 =======
 
-section 1-1 It's Oily
-level 1-1 It's Oily
-message 1-1 It's Oily
-###
-###
-###
+section 4-? Literally Bowling Alley
+level 4-? Literally Bowling Alley
+message 4-? Literally Bowling Alley
+############
+############
+############
+#####xx#####
+#####xx#####
+#####xx#####
+###_...._###
+###_...._###
+###_...._###
+###_.{}._###
+###_t..8_###
+###_b..2_###
+#####..#####
+############
+%#########$$
+
+section 4-? Lock
+level 4-? Lock
+message 4-? Lock
+##########
+##########
+##########
+##...___##
+##..._#_##
+##.46××_##
+##..._#_##
+##.46_××##
+##..._#_##
+##.46××_##
+##t.._#_##
+##b..___##
+##########
+%######$$$
+
+section 4-? Defense Line
+level 4-? Defense Line
+message 4-? Defense Line
+###############
+###############
+###############
+#######t#######
+######.b.######
+######..8######
+####.{}.2..####
+###.........###
+##___________##
+##+++++++++++##
+##___________##
+###.........###
+####...x...####
+######xxx######
+######xxx######
+#######x#######
+###############
+%############$$
