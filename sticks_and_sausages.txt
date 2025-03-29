@@ -19,6 +19,9 @@ TAGS
 
 pushable_type = stick sausage
 is_tip_or_packed = tip_or_packed not_tip_or_packed
+is_corner = corner not_corner
+diagonal_directions = nw ne sw se
+clock_directions = clockwise counterclockwise
 
 fixed_type = ground grill
 floor = floor_0 floor_1 floor_2
@@ -53,6 +56,9 @@ up right down left -> right down left up
 
 directions => counter_clockwise_direction
 up right down left -> left up right down
+
+diagonal_directions => clockwise_diagonal_direction
+ne se sw nw -> se sw nw ne 
 
 pushable_type => opposite_pushable_type
 stick sausage -> sausage stick
@@ -427,7 +433,10 @@ goal:floor_2
 #F7E26B80
 copy: goal:floor_1 translate: up:5
 
-goal_border:directions:floor_0
+goal_border:is_corner:directions:floor
+transparent
+
+goal_border:not_corner:directions:floor_0
 yellow
 0000000000
 ..........
@@ -441,13 +450,27 @@ yellow
 ..........
 rot: up:> translate: up:5
 
-goal_border:directions:floor_1
+goal_border:corner:directions:floor_0
 yellow
-copy: goal_border:directions:floor_0 translate: up:5
+0.........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+rot: up:> translate: up:5
 
-goal_border:directions:floor_2
+goal_border:is_corner:directions:floor_1
 yellow
-copy: goal_border:directions:floor_1 translate: up:5
+copy: goal_border:is_corner:directions:floor_0 translate: up:5
+
+goal_border:is_corner:directions:floor_2
+yellow
+copy: goal_border:is_corner:directions:floor_1 translate: up:5
 
 scoreboard_empty
 #211209
@@ -660,6 +683,9 @@ _win_count:count
 transparent
 
 _already_counted
+transparent
+
+_has_goal_border:directions:clock_directions:floor
 transparent
 
 _title_its_oily
@@ -1113,21 +1139,21 @@ pushable:sausage:is_tip_or_packed:directions:floor_0
 _stick_bottom:floor_0
 fixed:fixed_type:floor_0
 goal:floor_0
-directions -> goal_border:directions:floor_0
+is_corner directions -> goal_border:is_corner:directions:floor_0
 
 pushable:stick:is_tip_or_packed:directions:floor_1
 pushable:sausage:is_tip_or_packed:directions:floor_1
 _stick_bottom:floor_1
 fixed:fixed_type:floor_1
 goal:floor_1
-directions -> goal_border:directions:floor_1
+is_corner directions -> goal_border:is_corner:directions:floor_1
 
 pushable:stick:is_tip_or_packed:directions:floor_2
 pushable:sausage:is_tip_or_packed:directions:floor_2
 _stick_bottom:floor_2
 fixed:fixed_type:floor_2
 goal:floor_2
-directions -> goal_border:directions:floor_2
+is_corner directions -> goal_border:is_corner:directions:floor_2
 _floor_2_wall_cover
 
 force_type directions pushable_type floor -> _force:force_type:directions:pushable_type:floor:is_countered
@@ -1160,6 +1186,7 @@ floor -> _already_calculated_for_scoreboard:floor
 _scoreboard_calculation_spread_ongoing
 _win_count:count
 _already_counted
+directions clock_directions floor -> _has_goal_border:directions:clock_directions:floor
 
 --
 
@@ -1199,16 +1226,20 @@ RULES
   right [_init] [scoreboard_empty _rightmost_scoreboard | scoreboard_empty] -> [_init] [scoreboard_empty | scoreboard_empty]
   ( - Update scoreboard )
   [_init] -> [_init _update_scoreboard]
+  ( - Calculate floor 1 grass covers )
+  [_init] [fixed:ground:floor_1 fixed:fixed_type:floor_2] -> [_init] [fixed:ground:floor_1 fixed:fixed_type:floor_2 _floor_1_grass_cover]
+  ( - Calculate goal borders )
+  floor [_init] [goal:floor | no goal:floor ] -> [_init] [goal:floor goal_border:not_corner:>:floor | ]
+  floor [_init] [goal:floor | goal_border:not_corner:^:floor] -> [_init] [goal:floor _has_goal_border:>:counterclockwise:floor | goal_border:not_corner:^:floor]
+  floor [_init] [goal:floor | goal_border:not_corner:v:floor] -> [_init] [goal:floor _has_goal_border:>:clockwise:floor | goal_border:not_corner:v:floor]
+  floor [_init] [goal:floor _has_goal_border:<:clockwise:floor _has_goal_border:^:counterclockwise:floor] -> [_init] [goal:floor _has_goal_border:<:clockwise:floor _has_goal_border:^:counterclockwise:floor goal_border:corner:up:floor]
+  [_init] [_has_goal_border:directions:clock_directions:floor] -> [_init] []
 [_init] -> []
+
+
 
 ( Clear temp sprites )
 [_stick_bottom:floor] -> []
-
-( Calculate goal borders )
-floor [goal:floor | no goal:floor ] -> [goal:floor goal_border:>:floor | ]
-( Calculate floor 1 grass covers )
-[fixed:ground:floor_1 fixed:fixed_type:floor_2] -> [fixed:ground:floor_1 fixed:fixed_type:floor_2 _floor_1_grass_cover] 
-
 
 ( Save input direction on player and give force )
 floor [> pushable:stick:is_tip_or_packed:directions:floor] -> [> pushable:stick:is_tip_or_packed:directions:floor _input:> _force:insert:>:stick:floor:uncountered]
@@ -1804,7 +1835,7 @@ message 2-9 Far Reach
 ###.......###
 #############
 ⑱#########$$$
-(
+( Old version:
 ################
 ################
 ################
@@ -1863,13 +1894,15 @@ message 3-3 Placeholder
 ############
 ############
 ############
-###______###
-###___oo_###
-###_∩×«β›###
-###_v____###
-###______###
-###_ſ____###
-###_ɩ____###
+##........##
+##.______.##
+##.___oo_.##
+##._∩×«β›.##
+##._v____.##
+##.______.##
+##._ſ____.##
+##._ɩ____.##
+##........##
 ############
 ❸#########$$
 
@@ -2027,26 +2060,5 @@ message 3-9 Sound Test
 #######♯♯.....b###
 ##################
 ❾################$
-
-(
-section 4-? Literally Bowling Alley
-level 4-? Literally Bowling Alley
-message 4-? Literally Bowling Alley
-############
-############
-############
-#####xx#####
-#####xx#####
-#####xx#####
-###_...._###
-###_...._###
-###_...._###
-###_.{}._###
-###_t..n_###
-###_b..u_###
-#####..#####
-############
-##########$$
-)
 
 message Wow, you completed the game!
