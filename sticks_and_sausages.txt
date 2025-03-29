@@ -20,7 +20,6 @@ TAGS
 pushable_type = stick sausage
 is_tip_or_packed = tip_or_packed not_tip_or_packed
 is_corner = corner not_corner
-diagonal_directions = nw ne sw se
 clock_directions = clockwise counterclockwise
 
 fixed_type = ground grill
@@ -56,9 +55,6 @@ up right down left -> right down left up
 
 directions => counter_clockwise_direction
 up right down left -> left up right down
-
-diagonal_directions => clockwise_diagonal_direction
-ne se sw nw -> se sw nw ne 
 
 pushable_type => opposite_pushable_type
 stick sausage -> sausage stick
@@ -1235,7 +1231,6 @@ RULES
   floor [_init] [goal:floor _has_goal_border:<:clockwise:floor _has_goal_border:^:counterclockwise:floor] -> [_init] [goal:floor _has_goal_border:<:clockwise:floor _has_goal_border:^:counterclockwise:floor goal_border:corner:up:floor]
   [_init] [_has_goal_border:directions:clock_directions:floor] -> [_init] []
 [_init] -> []
-
 
 
 ( Clear temp sprites )
