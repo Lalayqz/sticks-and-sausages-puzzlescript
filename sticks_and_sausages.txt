@@ -1228,7 +1228,7 @@ RULES
   floor [_init] [goal:floor | no goal:floor ] -> [_init] [goal:floor goal_border:not_corner:>:floor | ]
   floor [_init] [goal:floor | goal_border:not_corner:^:floor] -> [_init] [goal:floor _has_goal_border:>:counterclockwise:floor | goal_border:not_corner:^:floor]
   floor [_init] [goal:floor | goal_border:not_corner:v:floor] -> [_init] [goal:floor _has_goal_border:>:clockwise:floor | goal_border:not_corner:v:floor]
-  floor [_init] [goal:floor _has_goal_border:<:clockwise:floor _has_goal_border:^:counterclockwise:floor] -> [_init] [goal:floor _has_goal_border:<:clockwise:floor _has_goal_border:^:counterclockwise:floor goal_border:corner:up:floor]
+  floor [_init] [goal:floor _has_goal_border:<:clockwise:floor _has_goal_border:^:counterclockwise:floor] -> [_init] [goal:floor _has_goal_border:<:clockwise:floor _has_goal_border:^:counterclockwise:floor goal_border:corner:^:floor]
   [_init] [_has_goal_border:directions:clock_directions:floor] -> [_init] []
 [_init] -> []
 
