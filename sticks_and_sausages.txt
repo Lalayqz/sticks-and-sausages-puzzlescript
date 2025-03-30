@@ -258,17 +258,17 @@ orange brown
 copy: _stick_bottom:floor_1 translate: up:5
 
 pushable:sausage:not_tip_or_packed:plain:up:floor_0
-#e06f8b #cc6680 #994d60
+#e06f8b #cc6680 #994d60 #e288ae
 ..........
 ..........
 ..........
 ...1000...
 .11000000.
-1100000001
-1100000001
-1100000001
-1100000001
-1100000001
+1100000300
+1100000030
+1100000030
+1100000000
+1100000000
 2222222222
 2222222222
 2222222222
@@ -276,16 +276,16 @@ pushable:sausage:not_tip_or_packed:plain:up:floor_0
 2222222222
 
 pushable:sausage:not_tip_or_packed:plain:down:floor_0
-#e06f8b #cc6680 #994d60
-1100000001
-1100000001
-1100000001
-1100000001
-1100000001
-1100000001
-1100000001
-1100000001
-1110000011
+#e06f8b #cc6680 #994d60 #e288ae
+1100000000
+1100000000
+1100000000
+1100000000
+1100000000
+1100000000
+1100000000
+1100000000
+1110000001
 2111111112
 2211111122
 .22222222.
@@ -294,7 +294,7 @@ pushable:sausage:not_tip_or_packed:plain:down:floor_0
 ..........
 
 pushable:sausage:not_tip_or_packed:plain:left:floor_0
-#e06f8b #cc6680 #994d60
+#e06f8b #cc6680 #994d60 #e288ae
 ..........
 ..........
 ...1000000
@@ -313,12 +313,12 @@ pushable:sausage:not_tip_or_packed:plain:left:floor_0
 
 
 pushable:sausage:not_tip_or_packed:plain:right:floor_0
-#e06f8b #cc6680 #994d60 (#e3c4d7)
+#e06f8b #cc6680 #994d60 #e288ae
 ..........
 ..........
 0000000...
-00000000..
-00000000..
+00003300..
+00000030..
 000000000.
 000000000.
 000000000.
@@ -331,11 +331,11 @@ pushable:sausage:not_tip_or_packed:plain:right:floor_0
 ..........
 
 pushable:sausage:not_tip_or_packed:plain:directions:floor_1
-#e06f8b #cc6680 #994d60
+#e06f8b #cc6680 #994d60 #e288ae
 copy: pushable:sausage:not_tip_or_packed:plain:directions:floor_0 translate: up:5
 
 pushable:sausage:not_tip_or_packed:plain:directions:floor_2
-#e06f8b #cc6680 #994d60
+#e06f8b #cc6680 #994d60 #e288ae
 copy: pushable:sausage:not_tip_or_packed:plain:directions:floor_1 translate: up:5
 
 pushable:sausage:not_tip_or_packed:spicy:up:floor_0
