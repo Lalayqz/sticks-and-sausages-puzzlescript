@@ -1287,7 +1287,6 @@ startloop
     ( - Blocked by same pushable_type in opposing space )
   force_type pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor | _force:force_type_2:>:pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:pushable_type:floor:countered] gosub calculate_moving_direction
     ( - Blocked by opposite pushable_type in opposing space ) // Unless current pushable has pierce or through_hole:...:next_space, because these two only apply to opposite pushable_type
-    // [TODO] do i really need through_hole???
   pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor no _pierce:pushable_type:floor:> no _through_hole:pushable_type:floor:>:next_space | _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
     ( - Blocked by a inserted pushable in the same space ) // Unless current pushable has pierce or through_hole:...:this_space
   pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:directions:floor no _through_hole:pushable_type:floor:>:this_space _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
@@ -1441,8 +1440,13 @@ subroutine calculate_moving_direction
   ( Save and clear old moving direction )
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor] -> [stationary pushable:pushable_type:is_tip_or_packed:directions:floor _calculate_moving_direction:pushable_type:floor _old_moving_direction:pushable_type:floor:>]
   ( Calculate moving direction for each type of force ) // Using temp_force_direction:force_type:directions.
-  // [TODO] add more additional rules
-  force_type directions pushable_type floor [_force:force_type:directions:pushable_type:floor:uncountered _calculate_moving_direction:pushable_type:floor no _force:force_type:opposite_direction:pushable_type:floor:uncountered no _force:force_type:clockwise_direction:pushable_type:floor:uncountered no _force:force_type:counter_clockwise_direction:pushable_type:floor:uncountered] -> [_temp_force_direction:force_type:directions:pushable_type:floor _force:force_type:directions:pushable_type:floor:uncountered _calculate_moving_direction:pushable_type:floor]
+  // For example, when there is a uncountered force driving right,
+  // 1 Don't move right when there's a left force, whether countered or not.
+  // 2 Only move right when there is no up/down force, or, when there is only one countered up/down force, or, when there are both up & down forces. (i.e. When there are no vertical movement candidate.)
+  force_type directions pushable_type floor [_force:force_type:directions:pushable_type:floor:uncountered _calculate_moving_direction:pushable_type:floor no _force:force_type:opposite_direction:pushable_type:floor:is_countered no _force:force_type:clockwise_direction:pushable_type:floor:is_countered no _force:force_type:counter_clockwise_direction:pushable_type:floor:is_countered] -> [_force:force_type:directions:pushable_type:floor:uncountered _calculate_moving_direction:pushable_type:floor _temp_force_direction:force_type:directions:pushable_type:floor]
+  force_type directions pushable_type floor [_force:force_type:directions:pushable_type:floor:uncountered _force:force_type:clockwise_direction:pushable_type:floor:countered _calculate_moving_direction:pushable_type:floor no _force:force_type:opposite_direction:pushable_type:floor:is_countered no _force:force_type:counter_clockwise_direction:pushable_type:floor:is_countered] -> [_force:force_type:directions:pushable_type:floor:uncountered _force:force_type:clockwise_direction:pushable_type:floor:countered _calculate_moving_direction:pushable_type:floor _temp_force_direction:force_type:directions:pushable_type:floor]
+  force_type directions pushable_type floor [_force:force_type:directions:pushable_type:floor:uncountered _force:force_type:counter_clockwise_direction:pushable_type:floor:countered _calculate_moving_direction:pushable_type:floor no _force:force_type:opposite_direction:pushable_type:floor:is_countered no _force:force_type:clockwise_direction:pushable_type:floor:is_countered] -> [_force:force_type:directions:pushable_type:floor:uncountered _force:force_type:counter_clockwise_direction:pushable_type:floor:countered _calculate_moving_direction:pushable_type:floor _temp_force_direction:force_type:directions:pushable_type:floor]
+  force_type directions pushable_type floor [_force:force_type:directions:pushable_type:floor:uncountered _force:force_type:clockwise_direction:pushable_type:floor:is_countered _force:force_type:counter_clockwise_direction:pushable_type:floor:is_countered _calculate_moving_direction:pushable_type:floor no _force:force_type:opposite_direction:pushable_type:floor:is_countered] -> [_force:force_type:directions:pushable_type:floor:uncountered _force:force_type:clockwise_direction:pushable_type:floor:is_countered _force:force_type:counter_clockwise_direction:pushable_type:floor:is_countered _calculate_moving_direction:pushable_type:floor _temp_force_direction:force_type:directions:pushable_type:floor]
   ( Calculate final moving direction, using insert push )
   pushable_type floor [pushable:pushable_type:is_tip_or_packed:directions:floor _temp_force_direction:insert:>:pushable_type:floor _calculate_moving_direction:pushable_type:floor] -> [> pushable:pushable_type:is_tip_or_packed:directions:floor _temp_force_direction:insert:>:pushable_type:floor _calculate_moving_direction:pushable_type:floor _spread:pushable_type:floor]
   ( Calculate final moving direction, using slip push )
@@ -1522,6 +1526,7 @@ message 1-2 No Escape
 #############
 #############
 #############
+#############
 ##...{}.#####
 ##.......####
 ##.......xx##
@@ -1538,6 +1543,7 @@ message 1-3 Get It Off
 #############
 #############
 #############
+#############
 ####....#..##
 ####.......##
 ####.......##
@@ -1550,6 +1556,7 @@ message 1-3 Get It Off
 section 1-4 Flip-flop
 level 1-4 Flip-flop
 message 1-4 Flip-flop
+#############
 #############
 #############
 #############
@@ -1570,6 +1577,7 @@ message 1-5 Drawbridge
 ############
 ############
 ############
+############
 ###xxxxxx###
 ###......###
 ##........##
@@ -1587,6 +1595,7 @@ message 1-6 Out of Order
 ###############
 ###############
 ###############
+###############
 ###........####
 ##x.t.n.{}.xx##
 ##x.b.u....####
@@ -1597,6 +1606,7 @@ message 1-6 Out of Order
 section 1-7 Odd Gap
 level 1-7 Odd Gap
 message 1-7 Odd Gap
+##################
 ##################
 ##################
 ##################
@@ -1616,6 +1626,7 @@ message 1-8 Claw Hammer
 ##############
 ##############
 ##############
+##############
 ####......####
 ###{}.....####
 ##t.......xx##
@@ -1628,6 +1639,7 @@ message 1-8 Claw Hammer
 section 1-9 Bowling Alley
 level 1-9 Bowling Alley
 message 1-9 Bowling Alley
+##############
 ##############
 ##############
 ##############
@@ -1648,6 +1660,7 @@ message 2-1 Afterlife
 ###########
 ###########
 ###########
+###########
 ###..n.x###
 ###..u.x###
 ###.#######
@@ -1664,6 +1677,7 @@ message 2-1 Afterlife
 section 2-2 Crossroad
 level 2-2 Crossroad
 message 2-2 Crossroad
+###########
 ###########
 ###########
 ###########
@@ -1687,6 +1701,7 @@ message 2-3 Production Line
 ###############
 ###############
 ###############
+###############
 ######oooo#####
 ######oooo#####
 ######oooo#####
@@ -1705,6 +1720,7 @@ message 2-3 Production Line
 section 2-4 Where?
 level 2-4 Where?
 message 2-4 Where?
+#############
 #############
 #############
 #############
@@ -1731,6 +1747,7 @@ message 2-5 Hiking Basics
 ################
 ################
 ################
+################
 ##xxnn...##...##
 ##xxuu...##...##
 ####.....##...##
@@ -1751,12 +1768,13 @@ message 2-6 Team Building
 ##############
 ##############
 ##############
+##############
 #####xxxx#####
 #####xxxx#####
 #####xxxx#####
 #####xxxx#####
-####n.....####
-####u...{}####
+####n...{}####
+####u.....####
 ####t.....####
 ####b...__####
 ####..____####
@@ -1775,6 +1793,7 @@ message 2-7 Sharing
 #############
 #############
 #############
+#############
 ##xxx___xxx##
 ###_______###
 ###___α___###
@@ -1788,6 +1807,7 @@ message 2-7 Sharing
 section 2-8 Well, Where?
 level 2-8 Well, Where?
 message 2-8 Well, Where?
+#############
 #############
 #############
 #############
@@ -1811,6 +1831,7 @@ message 2-8 Well, Where?
 section 2-9 Far Reach
 level 2-9 Far Reach
 message 2-9 Far Reach
+#############
 #############
 #############
 #############
@@ -1857,6 +1878,7 @@ message 3-1 Grill
 ##############
 ##############
 ##############
+##############
 ###xx##+[}xx##
 ##.{}.#.....##
 ##.........t##
@@ -1867,6 +1889,7 @@ message 3-1 Grill
 section 3-2 Inject
 level 3-2 Inject
 message 3-2 Inject
+#########
 #########
 #########
 #########
@@ -1886,24 +1909,28 @@ message 3-2 Inject
 section 3-3 Placeholder
 level 3-3 Placeholder
 message 3-3 Placeholder
-############
-############
-############
-##........##
-##.______.##
-##.___oo_.##
-##._∩×«β›.##
-##._v____.##
-##.______.##
-##._ſ____.##
-##._ɩ____.##
-##........##
-############
-❸#########$$
+##############
+##############
+##############
+##############
+##..........##
+##..........##
+##..______..##
+##..___oo_..##
+##.._∩×«β›..##
+##.._v____..##
+##..______..##
+##.._ſ____..##
+##.._ɩ____..##
+##..........##
+##..........##
+##############
+❸###########$$
 
 section 3-4 Corner
 level 3-4 Corner
 message 3-4 Corner
+############
 ############
 ############
 ############
@@ -1927,8 +1954,9 @@ message 3-5 Trojan
 ##########
 ##########
 ##########
+##########
 ####.#####
-####..#####
+####..####
 ####{}####
 ####xx####
 ###....###
@@ -1961,6 +1989,7 @@ message 3-6 Ditches
 ####################
 ####################
 ####################
+####################
 ######...........###
 ######...._......###
 #####.♯..._.......##
@@ -1983,6 +2012,7 @@ message 3-7 Odd Goal
 ############
 ############
 ############
+############
 ####oooo####
 ####♯♯♯♯####
 ####♯♯♯♯####
@@ -2002,6 +2032,7 @@ level 3-8 Bottleneck
 message 3-8 Bottleneck
 // Why not remove the top target of the 3 bottom-left targets, making the solution more obscure?
 // Because if so, then the stick has to go out of the horizontal sausage in order to pack the vertical sausage, but going out of the horizontal sausage is part of the solution.
+################
 ################
 ################
 ################
@@ -2039,6 +2070,7 @@ message 3-8 Bottleneck
 section 3-9 Sound Test
 level 3-9 Sound Test
 message 3-9 Sound Test
+##################
 ##################
 ##################
 ##################
