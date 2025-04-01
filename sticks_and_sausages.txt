@@ -1,4 +1,4 @@
-title Sticks and Sausages
+title Stick and Sausages
 author Lala_yqz
 
 sprite_size 10x10
