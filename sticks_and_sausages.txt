@@ -1,4 +1,4 @@
-title Sticks and Sausages
+title Stick and Sausages - Chapter 4
 author Lala_yqz
 
 sprite_size 10x10
@@ -9,7 +9,7 @@ again_interval 0.15
 level_select
 level_select_solve_symbol ✓
 level_select_lock
-level_select_unlocked_rollover 3
+level_select_unlocked_rollover 2
 run_rules_on_level_start
 //
 
@@ -339,16 +339,16 @@ pushable:sausage:not_tip_or_packed:plain:directions:floor_2
 copy: pushable:sausage:not_tip_or_packed:plain:directions:floor_1 translate: up:5
 
 pushable:sausage:not_tip_or_packed:spicy:up:floor_0
-#ec4354 #E03E4D #C12E3A red
+#ec4354 #e03e4d #c12e3a #ed5269
 ..........
 ..........
 ..........
 ...1000...
 .11000000.
-1100000001
-1103000001
-1100000001
 1100000301
+1100000031
+1100000031
+1100000001
 1100000001
 2222222222
 2222222222
@@ -357,14 +357,14 @@ pushable:sausage:not_tip_or_packed:spicy:up:floor_0
 2222222222
 
 pushable:sausage:not_tip_or_packed:spicy:down:floor_0
-#ec4354 #E03E4D #C12E3A red
-1100000001
-1100300001
+#ec4354 #e03e4d #c12e3a #ed5269
 1100000001
 1100000001
-1100003001
 1100000001
-1103000001
+1100000001
+1100000001
+1100000001
+1100000001
 1100000001
 1110000011
 2111111112
@@ -375,15 +375,15 @@ pushable:sausage:not_tip_or_packed:spicy:down:floor_0
 ..........
 
 pushable:sausage:not_tip_or_packed:spicy:left:floor_0
-#ec4354 #E03E4D #C12E3A red
+#ec4354 #e03e4d #c12e3a #ed5269
 ..........
 ..........
 ...1000000
-..10000300
 ..10000000
-.110030000
+..10000000
 .110000000
-.110000003
+.110000000
+.110000000
 .110000000
 .211000000
 .211111111
@@ -394,15 +394,15 @@ pushable:sausage:not_tip_or_packed:spicy:left:floor_0
 
 
 pushable:sausage:not_tip_or_packed:spicy:right:floor_0
-#ec4354 #E03E4D #C12E3A red
+#ec4354 #e03e4d #c12e3a #ed5269
 ..........
 ..........
 0000000...
-00003000..
-00000000..
+00003300..
+00000030..
 000000000.
 000000000.
-000003000.
+000000000.
 000000000.
 000000001.
 111111111.
@@ -412,11 +412,11 @@ pushable:sausage:not_tip_or_packed:spicy:right:floor_0
 ..........
 
 pushable:sausage:not_tip_or_packed:spicy:directions:floor_1
-#ec4354 #E03E4D #C12E3A red
+#ec4354 #e03e4d #c12e3a #ed5269
 copy: pushable:sausage:not_tip_or_packed:spicy:directions:floor_0 translate: up:5
 
 pushable:sausage:not_tip_or_packed:spicy:directions:floor_2
-#ec4354 #E03E4D #C12E3A red
+#ec4354 #e03e4d #c12e3a #ed5269
 copy: pushable:sausage:not_tip_or_packed:spicy:directions:floor_1 translate: up:5
 
 pushable:sausage:tip_or_packed:flavor:up:floor_0
@@ -1449,7 +1449,6 @@ startloop
     ( - Blocked by same pushable_type in opposing space )
   force_type pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | _force:force_type_2:>:pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:pushable_type:floor:countered] gosub calculate_moving_direction
     ( - Blocked by opposite pushable_type in opposing space ) // Unless current pushable has pierce or through_hole:...:next_space, because these two only apply to opposite pushable_type
-    // [TODO] do i really need through_hole???
   pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _pierce:pushable_type:floor:> no _through_hole:pushable_type:floor:>:next_space | _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
     ( - Blocked by a inserted pushable in the same space ) // Unless current pushable has pierce or through_hole:...:this_space
   pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:this_space _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _calculate_moving_direction:pushable_type:floor _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
@@ -1607,8 +1606,13 @@ subroutine calculate_moving_direction
   ( Save and clear old moving direction )
   pushable_type floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _calculate_moving_direction:pushable_type:floor] -> [stationary pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _calculate_moving_direction:pushable_type:floor _old_moving_direction:pushable_type:floor:>]
   ( Calculate moving direction for each type of force ) // Using temp_force_direction:force_type:directions.
-  // [TODO] add more additional rules
-  force_type directions pushable_type floor [_force:force_type:directions:pushable_type:floor:uncountered _calculate_moving_direction:pushable_type:floor no _force:force_type:opposite_direction:pushable_type:floor:uncountered no _force:force_type:clockwise_direction:pushable_type:floor:uncountered no _force:force_type:counter_clockwise_direction:pushable_type:floor:uncountered] -> [_temp_force_direction:force_type:directions:pushable_type:floor _force:force_type:directions:pushable_type:floor:uncountered _calculate_moving_direction:pushable_type:floor]
+  // For example, when there is a uncountered force driving right,
+  // 1 Don't move right when there's a left force, whether countered or not.
+  // 2 Only move right when there is no up/down force, or, when there is only one countered up/down force, or, when there are both up & down forces. (i.e. When there are no vertical movement candidate.)
+  force_type directions pushable_type floor [_force:force_type:directions:pushable_type:floor:uncountered _calculate_moving_direction:pushable_type:floor no _force:force_type:opposite_direction:pushable_type:floor:is_countered no _force:force_type:clockwise_direction:pushable_type:floor:is_countered no _force:force_type:counter_clockwise_direction:pushable_type:floor:is_countered] -> [_force:force_type:directions:pushable_type:floor:uncountered _calculate_moving_direction:pushable_type:floor _temp_force_direction:force_type:directions:pushable_type:floor]
+  force_type directions pushable_type floor [_force:force_type:directions:pushable_type:floor:uncountered _force:force_type:clockwise_direction:pushable_type:floor:countered _calculate_moving_direction:pushable_type:floor no _force:force_type:opposite_direction:pushable_type:floor:is_countered no _force:force_type:counter_clockwise_direction:pushable_type:floor:is_countered] -> [_force:force_type:directions:pushable_type:floor:uncountered _force:force_type:clockwise_direction:pushable_type:floor:countered _calculate_moving_direction:pushable_type:floor _temp_force_direction:force_type:directions:pushable_type:floor]
+  force_type directions pushable_type floor [_force:force_type:directions:pushable_type:floor:uncountered _force:force_type:counter_clockwise_direction:pushable_type:floor:countered _calculate_moving_direction:pushable_type:floor no _force:force_type:opposite_direction:pushable_type:floor:is_countered no _force:force_type:clockwise_direction:pushable_type:floor:is_countered] -> [_force:force_type:directions:pushable_type:floor:uncountered _force:force_type:counter_clockwise_direction:pushable_type:floor:countered _calculate_moving_direction:pushable_type:floor _temp_force_direction:force_type:directions:pushable_type:floor]
+  force_type directions pushable_type floor [_force:force_type:directions:pushable_type:floor:uncountered _force:force_type:clockwise_direction:pushable_type:floor:is_countered _force:force_type:counter_clockwise_direction:pushable_type:floor:is_countered _calculate_moving_direction:pushable_type:floor no _force:force_type:opposite_direction:pushable_type:floor:is_countered] -> [_force:force_type:directions:pushable_type:floor:uncountered _force:force_type:clockwise_direction:pushable_type:floor:is_countered _force:force_type:counter_clockwise_direction:pushable_type:floor:is_countered _calculate_moving_direction:pushable_type:floor _temp_force_direction:force_type:directions:pushable_type:floor]
   ( Calculate final moving direction, using insert push )
   pushable_type floor [pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _temp_force_direction:insert:>:pushable_type:floor _calculate_moving_direction:pushable_type:floor] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _temp_force_direction:insert:>:pushable_type:floor _calculate_moving_direction:pushable_type:floor _spread:pushable_type:floor]
   ( Calculate final moving direction, using slip push )
@@ -1672,6 +1676,7 @@ message 4-1 Spicy Sausage
 ############
 ############
 ############
+############
 ###..#######
 ##....46####
 ##......xx##
@@ -1683,6 +1688,7 @@ message 4-1 Spicy Sausage
 section 4-2 Literally Bowling Alley
 level 4-2 Literally Bowling Alley
 message 4-2 Literally Bowling Alley
+####################
 ####################
 ####################
 ####################
@@ -1701,6 +1707,7 @@ message 4-2 Literally Bowling Alley
 section 4-3 Defense Line
 level 4-3 Defense Line
 message 4-3 Defense Line
+###############
 ###############
 ###############
 ###############
@@ -1726,6 +1733,7 @@ message 4-4 Locked
 ##########
 ##########
 ##########
+##########
 #####___##
 #####___##
 ####._._##
@@ -1746,6 +1754,7 @@ message 4-4 Locked
 section 4-5 Intermediate Hiking
 level 4-5 Intermediate Hiking
 message 4-5 Intermediate Hiking
+###################
 ###################
 ###################
 ###################
