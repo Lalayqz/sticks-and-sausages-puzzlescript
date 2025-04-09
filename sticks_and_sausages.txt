@@ -764,6 +764,9 @@ transparent
 _already_counted
 transparent
 
+_just_calculated_force
+transparent
+
 _has_goal_border:directions:clock_directions:floor
 transparent
 
@@ -1344,6 +1347,7 @@ floor -> _already_calculated_for_scoreboard:floor
 _scoreboard_calculation_spread_ongoing
 _win_count:count
 _already_counted
+_just_calculated_force
 directions clock_directions floor -> _has_goal_border:directions:clock_directions:floor
 
 --
@@ -1410,8 +1414,10 @@ floor [pushable:stick:is_tip_or_packed:plain:<:floor | pushable:stick:is_tip_or_
 
 
 startloop
-  ( Give force to player ) // When subroutine remove_force_from_old_moving_direction removed the force .
+  ( Give force to player ) // When subroutine remove_force_from_old_moving_direction removed the force.
   floor [_input:> pushable:stick:is_tip_or_packed:plain:directions:floor no _force:insert:>:stick:floor:is_countered] -> [_input:> pushable:stick:is_tip_or_packed:plain:directions:floor _force:insert:>:stick:floor:uncountered _calculate_moving_direction:stick:floor] gosub calculate_moving_direction
+  ( Remove _just_calculated_force )
+  [_temp_variable_holder _just_calculated_force] -> [_temp_variable_holder]
 
   ( I Push )
   
@@ -1429,15 +1435,15 @@ startloop
     // If you remove the "no ..." from the rule, then the total instruction count is higher, because when "no ..." is used, contradictory rules like "X no X" won't get compiled.
   pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:flavor:^:floor no _force:simple:>:sausage:floor:is_countered no _force:slip:v:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:not_tip_or_packed:flavor:^:floor _force:simple:>:sausage:floor:uncountered _force:slip:v:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
     ( [Rotation A] [Slip] )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:flavor:^:floor no _force:slip:v:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:not_tip_or_packed:flavor:^:floor _force:slip:v:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+    pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:flavor:^:floor no _force:slip:v:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] [_temp_variable_holder no _just_calculated_force] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:not_tip_or_packed:flavor:^:floor _force:slip:v:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] [_temp_variable_holder] gosub calculate_moving_direction
     ( [Rotation A] [Simple] )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:flavor:^:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:not_tip_or_packed:flavor:^:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+    pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:flavor:^:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] [_temp_variable_holder no _just_calculated_force] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:not_tip_or_packed:flavor:^:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] [_temp_variable_holder] gosub calculate_moving_direction
     ( [Rotation B] [Simple + Slip] )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:flavor:v:floor no _force:simple:>:sausage:floor:is_countered no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:not_tip_or_packed:flavor:v:floor _force:simple:>:sausage:floor:uncountered _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+    pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:flavor:v:floor no _force:simple:>:sausage:floor:is_countered no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:not_tip_or_packed:flavor:v:floor _force:simple:>:sausage:floor:uncountered _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
     ( [Rotation B] [Slip] )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:flavor:v:floor no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:not_tip_or_packed:flavor:v:floor _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+    pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:flavor:v:floor no _force:slip:^:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] [_temp_variable_holder no _just_calculated_force] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:not_tip_or_packed:flavor:v:floor _force:slip:^:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] [_temp_variable_holder] gosub calculate_moving_direction
     ( [Rotation B] [Simple] )
-  pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:flavor:v:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:not_tip_or_packed:flavor:v:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
+    pushable_type is_tip_or_packed floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:next_space | pushable:sausage:not_tip_or_packed:flavor:v:floor no _force:simple:>:sausage:floor:is_countered no _force:insert:>:sausage:floor:uncountered] [_temp_variable_holder no _just_calculated_force] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:not_tip_or_packed:flavor:v:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] [_temp_variable_holder] gosub calculate_moving_direction
   ( - Push packed sausage )
   floor [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:tip_or_packed:flavor:directions:floor no _force:simple:>:sausage:floor:is_countered] -> [> pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | pushable:sausage:tip_or_packed:flavor:directions:floor _force:simple:>:sausage:floor:uncountered _calculate_moving_direction:sausage:floor] gosub calculate_moving_direction
 
@@ -1447,11 +1453,11 @@ startloop
   force_type pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | fixed:fixed_type:floor] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _calculate_moving_direction:pushable_type:floor | fixed:fixed_type:floor] gosub calculate_moving_direction
   ( Blocked by another pushable ) // When that another pushable has a countered force of that direction.
     ( - Blocked by same pushable_type in opposing space )
-  force_type pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | _force:force_type_2:>:pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:pushable_type:floor:countered] gosub calculate_moving_direction
+    force_type pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor | _force:force_type_2:>:pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:pushable_type:floor:countered] gosub calculate_moving_direction
     ( - Blocked by opposite pushable_type in opposing space ) // Unless current pushable has pierce or through_hole:...:next_space, because these two only apply to opposite pushable_type
-  pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _pierce:pushable_type:floor:> no _through_hole:pushable_type:floor:>:next_space | _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
+    pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _pierce:pushable_type:floor:> no _through_hole:pushable_type:floor:>:next_space | _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _calculate_moving_direction:pushable_type:floor | _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
     ( - Blocked by a inserted pushable in the same space ) // Unless current pushable has pierce or through_hole:...:this_space
-  pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:this_space _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _calculate_moving_direction:pushable_type:floor _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
+    pushable_type floor [_force:force_type:>:pushable_type:floor:uncountered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor no _through_hole:pushable_type:floor:>:this_space _force:force_type_2:>:opposite_pushable_type:floor:countered] -> [_force:force_type:>:pushable_type:floor:countered > pushable:pushable_type:is_tip_or_packed:flavor:directions:floor _calculate_moving_direction:pushable_type:floor _force:force_type_2:>:opposite_pushable_type:floor:countered] gosub calculate_moving_direction
 endloop
 
 ( sfx )
@@ -1625,7 +1631,10 @@ subroutine calculate_moving_direction
   ( Clear "temp_force_direction:force_type" & "calculate_moving_direction", add "spread" )
   [_temp_force_direction:force_type:directions:pushable_type:floor] -> []
   pushable_type floor [_calculate_moving_direction:pushable_type:floor] -> [_spread:pushable_type:floor] gosub spread
-
+  ( Add _just_calculated_force )
+  // _just_calculated_force is invented so that when pushing an sausage, the [Simple + Slip] force creation rule is always executed before the [Simple] or [Slip] force creation rule. (This may only happen after returning from calculate_moving_direction subroutine.)
+  // Using _just_calculated_force fixes the bug where there is a stick, a vertical sausage to the right of the stick, another vertical sausage to the up-right of the sausage, and a wall to the right of the 2nd sausage, and when pressing right, nothing moves.
+  [_temp_variable_holder] -> [_temp_variable_holder _just_calculated_force]
 
 
 ( Spread moving direction & force within rigid )
@@ -1754,22 +1763,22 @@ message 4-4 Locked
 section 4-5 Intermediate Hiking
 level 4-5 Intermediate Hiking
 message 4-5 Intermediate Hiking
-###################
-###################
-###################
-###################
-####.....n×n×n×####
-####.....u×u×u×####
-####oooo###########
-####oooo.x....#####
-####ooo.#x#...#####
-####ooo.#.#...#####
-####ooo.#.#..{}####
-####oooo.....{}####
-####oooo#xx..{}####
-####...........####
-####......88...####
-#####.....22..t####
-############..b####
-###################
-⓮#############$$$$$
+#####################
+#####################
+#####################
+#####################
+#####.....n×n×n×#####
+#####.....u×u×u×#####
+#####oooo############
+#####oooo.x....######
+#####ooo.#x#...######
+#####ooo.#.#...######
+#####ooo.#.#..{}#####
+#####oooo.....{}#####
+#####oooo#xx..{}#####
+#####...........#####
+#####......88...#####
+######.....22..t#####
+#############..b#####
+#####################
+⓮###############$$$$$
